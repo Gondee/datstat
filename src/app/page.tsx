@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Grid, List, Search, Command, Eye, EyeOff, Building2, TrendingUp } from 'lucide-react';
+import { Grid, List, Search, Command, Eye, EyeOff, Building2, TrendingUp, LogIn } from 'lucide-react';
 import { useDATStore, useCompanies } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, TerminalInput, Column } from '@/components/ui';
 import { CommandPalette } from '@/components/keyboard/CommandPalette';
@@ -205,6 +205,16 @@ export default function Dashboard() {
               icon={<Command className="w-4 h-4" />}
             >
               ⌘K
+            </TerminalButton>
+
+            <TerminalButton
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/login')}
+              icon={<LogIn className="w-4 h-4" />}
+              className="text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-accent)]"
+            >
+              Admin
             </TerminalButton>
           </div>
         </div>
