@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import AnalyticsOrchestrator from '@/utils/analytics/analyticsOrchestrator';
+import { analyticsService } from '@/services/analytics/analyticsService';
 
 export async function GET(
   request: NextRequest,
@@ -7,7 +7,6 @@ export async function GET(
 ) {
   try {
     const { ticker } = await params;
-    const orchestrator = new AnalyticsOrchestrator();
     
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
@@ -15,8 +14,8 @@ export async function GET(
     const includeVaR = searchParams.get('var') === 'true';
     const riskTypes = searchParams.get('types')?.split(',') || ['all'];
     
-    // Get risk assessment
-    const riskData = await orchestrator.getRiskAssessment(ticker.toUpperCase());
+    // Get risk assessment from analytics service
+    const riskData = await analyticsService.getRiskAnalytics(ticker.toUpperCase());
     
     // Filter risk types if specific ones requested
     let filteredRiskData = { ...riskData };
@@ -25,7 +24,7 @@ export async function GET(
       
       // Keep only requested risk types
       const filtered: any = {
-        riskScore: riskData.riskScore,
+        overallRisk: riskData.overallRisk,
         timestamp: new Date()
       };
       
@@ -34,14 +33,14 @@ export async function GET(
       if (allowedTypes.has('liquidity')) filtered.liquidityRisk = riskData.liquidityRisk;
       if (allowedTypes.has('credit')) filtered.creditRisk = riskData.creditRisk;
       if (allowedTypes.has('operational')) filtered.operationalRisk = riskData.operationalRisk;
-      if (allowedTypes.has('correlation')) filtered.correlationAnalysis = riskData.correlationAnalysis;
+      if (allowedTypes.has('beta')) filtered.betaAnalysis = riskData.betaAnalysis;
       
       if (includeVaR && allowedTypes.has('var')) {
         filtered.varAnalysis = riskData.varAnalysis;
       }
       
       if (includeStressTest && allowedTypes.has('stress')) {
-        filtered.stressTest = riskData.stressTest;
+        filtered.stressTests = riskData.stressTests;
       }
       
       filteredRiskData = filtered;
@@ -53,10 +52,10 @@ export async function GET(
         ticker: ticker.toUpperCase(),
         risk: filteredRiskData,
         summary: {
-          overallScore: riskData.riskScore.overallScore,
-          category: riskData.riskScore.category,
-          keyRisks: riskData.riskScore.keyRisks,
-          recommendations: riskData.riskScore.mitigationRecommendations
+          overallScore: riskData.overallRisk.score,
+          category: riskData.overallRisk.category,
+          level: riskData.overallRisk.level,
+          primaryRisks: riskData.overallRisk.primaryRisks || []
         }
       }
     });

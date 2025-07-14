@@ -1,23 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import AnalyticsOrchestrator from '@/utils/analytics/analyticsOrchestrator';
+import { analyticsService } from '@/services/analytics/analyticsService';
 import { createOptimizedAPIHandler } from '@/lib/performance/api-optimization';
 
 // Optimized GET handler with caching and compression
 export const GET = createOptimizedAPIHandler(
   async (request: NextRequest, { params }: { params: Promise<{ ticker: string }> }) => {
     const { ticker } = await params;
-    const orchestrator = new AnalyticsOrchestrator();
     
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const includeHistorical = searchParams.get('historical') !== 'false';
     const sections = searchParams.get('sections')?.split(',') || ['all'];
     
-    // Get comprehensive analytics
-    const analytics = await orchestrator.getComprehensiveAnalytics(
-      ticker.toUpperCase(),
-      includeHistorical
-    );
+    // Get comprehensive analytics from service
+    const analytics = await analyticsService.getComprehensiveAnalytics(ticker.toUpperCase());
     
     // Build response based on requested sections
     const response: any = {
@@ -28,91 +24,42 @@ export const GET = createOptimizedAPIHandler(
     const includeSections = new Set(sections);
     const includeAll = includeSections.has('all');
     
-    // NAV Analysis
+    // mNAV Analysis
     if (includeAll || includeSections.has('nav')) {
       response.nav = {
-        current: {
-          basicNAVPerShare: analytics.nav.basicNAVPerShare,
-          dilutedNAVPerShare: analytics.nav.dilutedNAVPerShare,
-          assumedDilutedNAVPerShare: analytics.nav.assumedDilutedNAVPerShare,
-          premiumDiscount: analytics.nav.premiumDiscount
-        },
-        components: analytics.nav.components,
-        shareDetails: analytics.nav.shareCountDetails
+        current: analytics.mNavAnalysis.current,
+        projections: analytics.mNavAnalysis.projections,
+        breakdown: analytics.mNavAnalysis.breakdown
       };
     }
     
     // Crypto Yield
     if (includeAll || includeSections.has('yield')) {
       response.cryptoYield = {
-        yields: {
-          btc: analytics.cryptoYield.btcYield,
-          eth: analytics.cryptoYield.ethYield,
-          sol: analytics.cryptoYield.solYield,
-          total: analytics.cryptoYield.totalCryptoYield
-        },
-        accretiveDilutive: analytics.cryptoYield.accretiveDilutiveAnalysis
+        current: analytics.yieldTracking.currentYield,
+        byHolding: analytics.yieldTracking.yieldByHolding,
+        projections: analytics.yieldTracking.projectedYield,
+        optimization: analytics.yieldTracking.optimizationOpportunities
       };
     }
     
     // Dilution Analysis
     if (includeAll || includeSections.has('dilution')) {
-      response.dilution = {
-        current: analytics.dilution.currentDilution,
-        projections: analytics.dilution.projectedDilution,
-        warrantAnalysis: analytics.dilution.warrantAnalysis,
-        waterfall: analytics.dilution.dilutionWaterfall
-      };
+      response.dilution = analytics.dilutionAnalysis;
     }
     
     // Risk Assessment
     if (includeAll || includeSections.has('risk')) {
-      response.risk = {
-        scorecard: analytics.risk.riskScore,
-        marketRisk: {
-          volatility: analytics.risk.marketRisk.volatility.annualized,
-          beta: analytics.risk.marketRisk.beta,
-          sharpeRatio: analytics.risk.marketRisk.sharpeRatio
-        },
-        concentrationRisk: analytics.risk.concentrationRisk.treasuryConcentration,
-        stressTest: analytics.risk.stressTest.scenarios.map((s: any) => ({
-          scenario: s.name,
-          probability: s.probability,
-          impact: s.overallImpact
-        }))
-      };
+      response.risk = analytics.riskAnalysis;
     }
     
     // Financial Health
     if (includeAll || includeSections.has('health')) {
-      response.financialHealth = {
-        score: analytics.financialHealth.overallScore,
-        grade: analytics.financialHealth.grade,
-        outlook: analytics.financialHealth.outlook,
-        components: Object.entries(analytics.financialHealth.components).reduce((acc, [key, value]) => {
-          acc[key] = {
-            score: (value as any).score,
-            rating: (value as any)[`${key}Rating`]
-          };
-          return acc;
-        }, {} as any),
-        strengths: analytics.financialHealth.strengths,
-        recommendations: analytics.financialHealth.recommendations
-      };
+      response.financialHealth = analytics.financialHealth;
     }
     
-    // Institutional Metrics Summary
-    if (includeAll || includeSections.has('institutional')) {
-      response.institutionalMetrics = {
-        treasuryValue: analytics.institutionalMetrics.treasuryValue,
-        treasuryValuePerShare: analytics.institutionalMetrics.treasuryValuePerShare,
-        navPerShare: analytics.institutionalMetrics.navPerShare,
-        premiumToNav: analytics.institutionalMetrics.premiumToNavPercent,
-        debtToTreasury: analytics.institutionalMetrics.debtToTreasuryRatio,
-        capitalEfficiency: analytics.institutionalMetrics.capitalEfficiency,
-        operationalMetrics: analytics.institutionalMetrics.operationalMetrics
-      };
-    }
+    // Summary
+    response.summary = analytics.summary;
     
     return NextResponse.json({
       success: true,
@@ -140,7 +87,6 @@ export async function POST(
 ) {
   try {
     const { ticker } = await params;
-    const orchestrator = new AnalyticsOrchestrator();
     const body = await request.json();
     
     const {
@@ -157,39 +103,17 @@ export async function POST(
     switch (analysisType) {
       case 'nav-attribution':
         // NAV attribution analysis
-        const endDate = new Date();
-        const startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 1);
-        
-        result = await orchestrator.getRealTimeNAV(ticker.toUpperCase());
+        result = await analyticsService.getMNavAnalytics(ticker.toUpperCase());
         break;
         
       case 'yield-breakdown':
         // Detailed yield analysis
-        const yieldData = await orchestrator.getCryptoYieldAnalysis(
-          ticker.toUpperCase(),
-          timeFrame || 'yearly'
-        );
-        result = {
-          yields: yieldData,
-          costBasis: yieldData.costBasisTracking,
-          accretionAnalysis: yieldData.accretiveDilutiveAnalysis
-        };
+        result = await analyticsService.getYieldAnalytics(ticker.toUpperCase());
         break;
         
-      case 'scenario-stress':
-        // Custom scenario analysis
-        if (!scenarios || !Array.isArray(scenarios)) {
-          return NextResponse.json(
-            { success: false, error: 'Scenarios are required for scenario-stress analysis' },
-            { status: 400 }
-          );
-        }
-        
-        result = await orchestrator.runScenarioAnalysis(
-          ticker.toUpperCase(),
-          scenarios
-        );
+      case 'risk-assessment':
+        // Risk analysis
+        result = await analyticsService.getRiskAnalytics(ticker.toUpperCase());
         break;
         
       case 'peer-relative':
@@ -197,34 +121,12 @@ export async function POST(
         const peers = compareWith || [];
         const allTickers = [ticker.toUpperCase(), ...peers.map((p: string) => p.toUpperCase())];
         
-        const comparativeData = await orchestrator.getComparativeAnalytics(allTickers);
-        
-        // Extract relative metrics for the target company
-        const targetRankings = Object.entries(comparativeData.rankings).reduce((acc, [metric, rankings]) => {
-          const targetRank = (rankings as any).find((r: any) => r.ticker === ticker.toUpperCase());
-          if (targetRank) {
-            acc[metric] = {
-              rank: targetRank.rank,
-              percentile: targetRank.percentile,
-              value: targetRank.value
-            };
-          }
-          return acc;
-        }, {} as any);
-        
-        result = {
-          rankings: targetRankings,
-          peerComparison: comparativeData.comparative.relativeValue,
-          correlations: comparativeData.comparative.correlations
-        };
+        result = await analyticsService.getComparativeAnalytics(allTickers);
         break;
         
       default:
         // Default comprehensive analysis
-        result = await orchestrator.getComprehensiveAnalytics(
-          ticker.toUpperCase(),
-          true
-        );
+        result = await analyticsService.getComprehensiveAnalytics(ticker.toUpperCase());
     }
     
     return NextResponse.json({

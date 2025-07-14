@@ -1,24 +1,84 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, TrendingUp, DollarSign, Coins, Activity } from 'lucide-react';
-import { useCompanies } from '@/utils/store';
+import { useFetchCompany } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, Column, InstitutionalMetrics, CryptoYieldTracker } from '@/components/ui';
 import { formatCurrency, formatPercentage, getChangeColor } from '@/utils/formatters';
-import { TreasuryTransaction } from '@/types';
+import { TreasuryTransaction, CompanyWithMetrics } from '@/types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface CompanyPageClientProps {
   ticker: string;
 }
 
+interface HistoricalDataPoint {
+  date: string;
+  stockPrice: number;
+  treasuryValue: number;
+  premiumToNav: number;
+  premiumToNavPercent: number;
+  navPerShare: number;
+  volume: number;
+}
+
 export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'holdings' | 'transactions' | 'performance' | 'institutional' | 'yield'>('overview');
+  const [company, setCompany] = useState<CompanyWithMetrics | null>(null);
+  const [historicalData, setHistoricalData] = useState<HistoricalDataPoint[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
-  const companies = useCompanies();
+  const fetchCompany = useFetchCompany();
   
-  const company = companies.find(c => c.ticker === ticker.toUpperCase());
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      
+      // Fetch company data
+      const companyData = await fetchCompany(ticker.toUpperCase());
+      setCompany(companyData);
+      
+      // Fetch historical data
+      try {
+        const response = await fetch(`/api/data/companies/${ticker}/historical`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data.historical) {
+            setHistoricalData(data.data.historical);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch historical data:', error);
+        // Use mock data as fallback
+        setHistoricalData([
+          { date: '2024-01', stockPrice: 1200, treasuryValue: 11500000000, premiumToNav: 150, premiumToNavPercent: 15.2, navPerShare: 986, volume: 1250000 },
+          { date: '2024-02', stockPrice: 1350, treasuryValue: 11800000000, premiumToNav: 220, premiumToNavPercent: 18.7, navPerShare: 1130, volume: 1450000 },
+          { date: '2024-03', stockPrice: 1450, treasuryValue: 12100000000, premiumToNav: 280, premiumToNavPercent: 22.1, navPerShare: 1170, volume: 1680000 },
+          { date: '2024-04', stockPrice: 1380, treasuryValue: 12300000000, premiumToNav: 245, premiumToNavPercent: 19.8, navPerShare: 1135, volume: 1320000 },
+          { date: '2024-05', stockPrice: 1520, treasuryValue: 12800000000, premiumToNav: 315, premiumToNavPercent: 24.5, navPerShare: 1205, volume: 1890000 },
+        ]);
+      }
+      
+      setIsLoading(false);
+    };
+    loadData();
+  }, [ticker, fetchCompany]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black p-6 flex items-center justify-center">
+        <TerminalCard>
+          <div className="text-center py-8">
+            <h2 className="text-xl text-[color:var(--terminal-accent)] mb-4">Loading...</h2>
+            <p className="text-[color:var(--terminal-text-secondary)]">
+              Fetching company data for {ticker.toUpperCase()}
+            </p>
+          </div>
+        </TerminalCard>
+      </div>
+    );
+  }
 
   if (!company) {
     return (
@@ -38,14 +98,7 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
     );
   }
 
-  // Mock historical data for charts
-  const historicalData = [
-    { date: '2024-01', stockPrice: 1200, treasuryValue: 11500000000, premiumToNav: 15.2 },
-    { date: '2024-02', stockPrice: 1350, treasuryValue: 11800000000, premiumToNav: 18.7 },
-    { date: '2024-03', stockPrice: 1450, treasuryValue: 12100000000, premiumToNav: 22.1 },
-    { date: '2024-04', stockPrice: 1380, treasuryValue: 12300000000, premiumToNav: 19.8 },
-    { date: '2024-05', stockPrice: 1520, treasuryValue: 12800000000, premiumToNav: 24.5 },
-  ];
+  // Historical data is now fetched from the API in useEffect
 
   // Colors for pie chart
   const COLORS = ['var(--chart-primary)', 'var(--chart-tertiary)', 'var(--chart-danger)', 'var(--chart-quaternary)'];

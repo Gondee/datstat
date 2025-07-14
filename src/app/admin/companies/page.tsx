@@ -26,21 +26,28 @@ export default function CompaniesManagement() {
   const [showFormModal, setShowFormModal] = useState(false);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data load - in production this would be from API
-  useEffect(() => {
-    const loadCompanies = async () => {
-      try {
-        // Simulate API call
-        const { companies: mockCompanies } = await import('@/data/mockData');
-        setCompanies(mockCompanies);
-      } catch (error) {
-        console.error('Failed to load companies:', error);
-      } finally {
-        setLoading(false);
+  // Load companies from API
+  const loadCompanies = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/admin/companies');
+      if (!response.ok) {
+        throw new Error('Failed to load companies');
       }
-    };
+      const data = await response.json();
+      setCompanies(data.companies);
+    } catch (error) {
+      console.error('Failed to load companies:', error);
+      setError('Failed to load companies. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadCompanies();
   }, []);
 
@@ -64,27 +71,45 @@ export default function CompaniesManagement() {
   const handleSaveCompany = async (companyData: Partial<Company>) => {
     try {
       if (formMode === 'add') {
-        // In production, this would be an API call
-        const newCompany: Company = {
-          ...companyData as Company,
-          treasury: [],
-          executiveCompensation: [],
-          lastUpdated: new Date().toISOString()
-        };
-        setCompanies(prev => [...prev, newCompany]);
+        // Create new company via API
+        const response = await fetch('/api/admin/companies', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(companyData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create company');
+        }
+
+        // Reload companies list to get the new company with database ID
+        await loadCompanies();
       } else if (selectedCompany) {
-        // Update existing company
-        setCompanies(prev => prev.map(c => 
-          c.ticker === selectedCompany.ticker 
-            ? { ...c, ...companyData, lastUpdated: new Date().toISOString() }
-            : c
-        ));
+        // Update existing company via API
+        const response = await fetch(`/api/admin/companies/${selectedCompany.ticker}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(companyData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to update company');
+        }
+
+        // Reload companies list to get updated data
+        await loadCompanies();
       }
       setShowFormModal(false);
       setSelectedCompany(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save company:', error);
-      throw error;
+      throw new Error(error.message || 'Failed to save company');
     }
   };
 
@@ -93,11 +118,27 @@ export default function CompaniesManagement() {
     setShowDeleteModal(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedCompany) {
-      setCompanies(companies.filter(c => c.ticker !== selectedCompany.ticker));
-      setShowDeleteModal(false);
-      setSelectedCompany(null);
+      try {
+        const response = await fetch(`/api/admin/companies/${selectedCompany.ticker}`, {
+          method: 'DELETE',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to delete company');
+        }
+
+        // Reload companies list
+        await loadCompanies();
+        setShowDeleteModal(false);
+        setSelectedCompany(null);
+      } catch (error: any) {
+        console.error('Failed to delete company:', error);
+        setError(error.message || 'Failed to delete company. Please try again.');
+        setShowDeleteModal(false);
+      }
     }
   };
 
@@ -161,6 +202,16 @@ export default function CompaniesManagement() {
           Add Company
         </TerminalButton>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <TerminalCard className="border-[color:var(--terminal-danger)]">
+          <div className="flex items-center space-x-2 text-[color:var(--terminal-danger)]">
+            <AlertTriangle className="w-4 h-4" />
+            <span className="font-mono">{error}</span>
+          </div>
+        </TerminalCard>
+      )}
 
       {/* Search and Filters */}
       <TerminalCard title="Search & Filter">

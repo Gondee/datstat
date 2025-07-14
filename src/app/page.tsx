@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Grid, List, Search, Command, Eye, EyeOff, Building2, TrendingUp, LogIn } from 'lucide-react';
 import { useDATStore, useCompanies } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, TerminalInput, Column } from '@/components/ui';
@@ -26,9 +26,22 @@ export default function Dashboard() {
     addToWatchlist,
     removeFromWatchlist,
     addToComparison,
+    fetchCompanies,
+    isLoading,
+    error,
+    lastFetch,
   } = useDATStore();
   
   const companies = useCompanies();
+
+  // Fetch companies on mount
+  useEffect(() => {
+    // Only fetch if we haven't fetched recently (within 5 minutes)
+    const shouldFetch = !lastFetch || new Date().getTime() - new Date(lastFetch).getTime() > 5 * 60 * 1000;
+    if (shouldFetch) {
+      fetchCompanies();
+    }
+  }, [fetchCompanies, lastFetch]);
 
   // Keyboard navigation
   useKeyboardShortcuts({
@@ -249,8 +262,77 @@ export default function Dashboard() {
       />
 
 
+      {/* Loading State */}
+      {isLoading && companies.length === 0 && (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[color:var(--terminal-accent)] mx-auto mb-4"></div>
+            <p className="text-[color:var(--terminal-text-secondary)]">Loading companies data...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !isLoading && (
+        <TerminalCard className="mb-6">
+          <div className="flex items-center justify-between p-4">
+            <div className="flex items-center space-x-3">
+              <div className="text-red-500">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-[color:var(--terminal-text-primary)] font-medium">Error Loading Data</h3>
+                <p className="text-[color:var(--terminal-text-secondary)] text-sm">{error}</p>
+              </div>
+            </div>
+            <TerminalButton
+              variant="ghost"
+              size="sm"
+              onClick={() => fetchCompanies()}
+            >
+              Retry
+            </TerminalButton>
+          </div>
+        </TerminalCard>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && !error && filteredCompanies.length === 0 && companies.length === 0 && (
+        <TerminalCard className="mb-6">
+          <div className="text-center p-8">
+            <Building2 className="w-12 h-12 text-[color:var(--terminal-text-secondary)] mx-auto mb-4" />
+            <h3 className="text-[color:var(--terminal-text-primary)] font-medium mb-2">No Companies Found</h3>
+            <p className="text-[color:var(--terminal-text-secondary)] text-sm mb-4">
+              No companies with digital asset treasuries are currently in the database.
+            </p>
+            <TerminalButton
+              variant="primary"
+              size="sm"
+              onClick={() => fetchCompanies()}
+            >
+              Refresh Data
+            </TerminalButton>
+          </div>
+        </TerminalCard>
+      )}
+
+      {/* No Results State (filtered) */}
+      {!isLoading && !error && filteredCompanies.length === 0 && companies.length > 0 && (
+        <TerminalCard className="mb-6">
+          <div className="text-center p-8">
+            <Search className="w-12 h-12 text-[color:var(--terminal-text-secondary)] mx-auto mb-4" />
+            <h3 className="text-[color:var(--terminal-text-primary)] font-medium mb-2">No Results Found</h3>
+            <p className="text-[color:var(--terminal-text-secondary)] text-sm">
+              No companies match your search criteria. Try adjusting your filters.
+            </p>
+          </div>
+        </TerminalCard>
+      )}
+
       {/* Companies Display */}
-      {viewMode === 'grid' ? (
+      {!isLoading && !error && filteredCompanies.length > 0 && viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredCompanies.map((company) => (
             <div
@@ -306,7 +388,7 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-      ) : (
+      ) : !isLoading && !error && filteredCompanies.length > 0 ? (
         <TerminalCard>
           <DataTable
             data={filteredCompanies as unknown as Record<string, unknown>[]}
@@ -315,7 +397,7 @@ export default function Dashboard() {
             keyboardNavigation={true}
           />
         </TerminalCard>
-      )}
+      ) : null}
 
       {/* Keyboard shortcuts hint */}
       <div className="mt-8 text-center text-[color:var(--terminal-text-muted)] text-xs">

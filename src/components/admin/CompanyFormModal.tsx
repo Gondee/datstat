@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Building2, DollarSign, Users, Briefcase, AlertTriangle } from 'lucide-react';
+import { X, Building2, DollarSign, Users, Briefcase, AlertTriangle, CheckCircle } from 'lucide-react';
 import { TerminalCard, TerminalButton, TerminalInput } from '@/components/ui';
 import { Company, CryptoType } from '@/types';
 
@@ -87,6 +87,8 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'basic' | 'business' | 'capital' | 'governance'>('basic');
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (company && mode === 'edit') {
@@ -156,6 +158,8 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
       });
     }
     setErrors({});
+    setApiError(null);
+    setSuccessMessage(null);
   }, [company, mode, isOpen]);
 
   const validateForm = (): boolean => {
@@ -197,6 +201,9 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
     }
 
     setLoading(true);
+    setApiError(null);
+    setSuccessMessage(null);
+    
     try {
       const companyData: Partial<Company> = {
         ticker: formData.ticker.toUpperCase(),
@@ -208,7 +215,7 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
         shareholdersEquity: formData.shareholdersEquity,
         totalDebt: formData.totalDebt,
         businessModel: {
-          revenueStreams: formData.revenueStreams.split(',').map(s => s.trim()),
+          revenueStreams: formData.revenueStreams.split(',').map(s => s.trim()).filter(s => s),
           operatingRevenue: formData.operatingRevenue,
           operatingExpenses: formData.operatingExpenses,
           cashBurnRate: formData.cashBurnRate,
@@ -242,9 +249,51 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
       };
 
       await onSave(companyData);
-      onClose();
-    } catch (error) {
+      setSuccessMessage(mode === 'add' ? 'Company created successfully!' : 'Company updated successfully!');
+      
+      // Reset form if adding new company
+      if (mode === 'add') {
+        setFormData({
+          ticker: '',
+          name: '',
+          description: '',
+          sector: '',
+          marketCap: 0,
+          sharesOutstanding: 0,
+          shareholdersEquity: 0,
+          totalDebt: 0,
+          revenueStreams: '',
+          operatingRevenue: 0,
+          operatingExpenses: 0,
+          cashBurnRate: 0,
+          isTreasuryFocused: false,
+          legacyBusinessValue: 0,
+          sharesBasic: 0,
+          sharesDilutedCurrent: 0,
+          sharesDilutedAssumed: 0,
+          sharesFloat: 0,
+          sharesInsiderOwned: 0,
+          sharesInstitutionalOwned: 0,
+          weightedAverageShares: 0,
+          stockOptions: 0,
+          restrictedStockUnits: 0,
+          performanceStockUnits: 0,
+          boardSize: 0,
+          independentDirectors: 0,
+          ceoFounder: false,
+          votingRights: '',
+          auditFirm: ''
+        });
+        setActiveTab('basic');
+      }
+      
+      // Close modal after a short delay to show success message
+      setTimeout(() => {
+        onClose();
+      }, 1500);
+    } catch (error: any) {
       console.error('Failed to save company:', error);
+      setApiError(error.message || 'Failed to save company. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -284,6 +333,24 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
             Close
           </TerminalButton>
         </div>
+
+        {/* Error/Success Messages */}
+        {(apiError || successMessage) && (
+          <div className="px-6 py-3 border-b border-[color:var(--terminal-border)]">
+            {apiError && (
+              <div className="flex items-center space-x-2 text-[color:var(--terminal-danger)]">
+                <AlertTriangle className="w-4 h-4" />
+                <span className="text-sm font-mono">{apiError}</span>
+              </div>
+            )}
+            {successMessage && (
+              <div className="flex items-center space-x-2 text-[color:var(--terminal-success)]">
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-mono">{successMessage}</span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Tab Navigation */}
         <div className="flex border-b border-[color:var(--terminal-border)] px-6">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   RadarChart,
   PolarGrid,
@@ -26,6 +26,7 @@ import { Shield, AlertTriangle, Activity, TrendingDown } from 'lucide-react';
 import { TerminalCard, TerminalButton } from '@/components/ui';
 import { formatPercentage, formatCurrency } from '@/utils/formatters';
 import { CompanyWithMetrics } from '@/types';
+import { useRiskMetrics } from '@/hooks/useAnalyticsData';
 
 interface RiskVisualizationDashboardProps {
   companies: CompanyWithMetrics[];
@@ -61,21 +62,45 @@ export function RiskVisualizationDashboard({
     return companies.find(c => c.ticker === selectedTicker);
   }, [companies, selectedTicker]);
 
+  // Fetch risk metrics from API
+  const { data: riskMetrics, isLoading: isLoadingRisk } = useRiskMetrics(selectedTicker);
+
   // Risk scorecard data
   const riskScoreData = useMemo(() => {
     if (!selectedCompanyData) return [];
 
+    // Use real data if available, otherwise use calculated values
+    if (riskMetrics?.riskProfile) {
+      return [
+        { metric: 'Market Risk', value: riskMetrics.riskProfile.marketRisk * 100, max: 100 },
+        { metric: 'Liquidity Risk', value: riskMetrics.riskProfile.liquidityRisk * 100, max: 100 },
+        { metric: 'Concentration Risk', value: riskMetrics.riskProfile.concentrationRisk * 100, max: 100 },
+        { metric: 'Volatility Risk', value: riskMetrics.riskProfile.volatilityRisk * 100, max: 100 },
+        { metric: 'Regulatory Risk', value: riskMetrics.riskProfile.regulatoryRisk * 100, max: 100 },
+        { metric: 'Operational Risk', value: riskMetrics.riskProfile.operationalRisk * 100, max: 100 },
+      ];
+    }
+
+    // Fallback to calculated values based on company data
+    const treasuryConcentration = selectedCompanyData.treasury.length > 0 
+      ? (selectedCompanyData.treasury[0].currentValue / selectedCompanyData.metrics.treasuryValue) * 100 
+      : 0;
+    
+    const volatility = Math.abs(selectedCompanyData.marketData.change24hPercent) * 5;
+    const liquidityRisk = selectedCompanyData.metrics.debtToTreasuryRatio > 1 ? 70 : 30;
+    const marketRisk = volatility + (selectedCompanyData.metrics.premiumToNavPercent > 50 ? 20 : 0);
+
     const risks = [
-      { metric: 'Market Risk', value: Math.random() * 100, max: 100 },
-      { metric: 'Liquidity Risk', value: Math.random() * 100, max: 100 },
-      { metric: 'Concentration Risk', value: Math.random() * 100, max: 100 },
-      { metric: 'Volatility Risk', value: Math.abs(selectedCompanyData.marketData.change24hPercent) || 50, max: 100 },
-      { metric: 'Regulatory Risk', value: Math.random() * 100, max: 100 },
-      { metric: 'Operational Risk', value: Math.random() * 100, max: 100 },
+      { metric: 'Market Risk', value: Math.min(marketRisk, 100), max: 100 },
+      { metric: 'Liquidity Risk', value: liquidityRisk, max: 100 },
+      { metric: 'Concentration Risk', value: treasuryConcentration, max: 100 },
+      { metric: 'Volatility Risk', value: Math.min(volatility, 100), max: 100 },
+      { metric: 'Regulatory Risk', value: 35, max: 100 }, // Static for now
+      { metric: 'Operational Risk', value: 25, max: 100 }, // Static for now
     ];
 
     return risks;
-  }, [selectedCompanyData]);
+  }, [selectedCompanyData, riskMetrics]);
 
   // VaR (Value at Risk) data
   const varData = useMemo(() => {

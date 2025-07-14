@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CompanyWithMetrics, NewsItem } from '@/types';
-import { companiesWithMetrics, newsItems } from '@/data/mockData';
 
 export type ViewMode = 'grid' | 'list';
 export type SortField = 'ticker' | 'name' | 'treasuryValue' | 'premiumToNav' | 'stockPrice' | 'marketCap';
@@ -19,6 +18,9 @@ interface DATState {
   // Data
   companies: CompanyWithMetrics[];
   news: NewsItem[];
+  isLoading: boolean;
+  error: string | null;
+  lastFetch: Date | null;
   
   // UI State
   viewMode: ViewMode;
@@ -46,7 +48,9 @@ interface DATState {
   removeFromWatchlist: (ticker: string) => void;
   updateFilters: (filters: Partial<FilterState>) => void;
   setSorting: (field: SortField, direction?: SortDirection) => void;
-  refreshData: () => void;
+  refreshData: () => Promise<void>;
+  fetchCompanies: () => Promise<void>;
+  fetchCompany: (ticker: string) => Promise<CompanyWithMetrics | null>;
 }
 
 const defaultFilters: FilterState = {
@@ -61,8 +65,11 @@ export const useDATStore = create<DATState>()(
   persist(
     (set, get) => ({
       // Initial state
-      companies: companiesWithMetrics,
-      news: newsItems,
+      companies: [],
+      news: [],
+      isLoading: false,
+      error: null,
+      lastFetch: null,
       viewMode: 'grid',
       selectedCompany: null,
       comparisonList: [],
@@ -70,11 +77,12 @@ export const useDATStore = create<DATState>()(
       filters: defaultFilters,
       sortField: 'treasuryValue',
       sortDirection: 'desc',
-      filteredCompanies: companiesWithMetrics,
+      filteredCompanies: [],
 
       // Actions
       setCompanies: (companies) => {
         set({ companies });
+        get().applyFiltersAndSort();
       },
 
       setNews: (news) => set({ news }),
@@ -112,17 +120,74 @@ export const useDATStore = create<DATState>()(
       updateFilters: (newFilters) => {
         const { filters } = get();
         set({ filters: { ...filters, ...newFilters } });
+        get().applyFiltersAndSort();
       },
 
       setSorting: (field, direction) => {
         const { sortField, sortDirection } = get();
         const newDirection = direction || (field === sortField && sortDirection === 'desc' ? 'asc' : 'desc');
         set({ sortField: field, sortDirection: newDirection });
+        get().applyFiltersAndSort();
       },
 
-      refreshData: () => {
-        // In a real app, this would fetch fresh data from APIs
-        set({ companies: companiesWithMetrics, news: newsItems });
+      refreshData: async () => {
+        await get().fetchCompanies();
+      },
+
+      fetchCompanies: async () => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await fetch('/api/data/companies');
+          if (!response.ok) {
+            throw new Error('Failed to fetch companies');
+          }
+          const data = await response.json();
+          if (data.success && data.data) {
+            set({ 
+              companies: data.data, 
+              lastFetch: new Date(),
+              isLoading: false 
+            });
+            get().applyFiltersAndSort();
+          } else {
+            throw new Error(data.error || 'Failed to fetch companies');
+          }
+        } catch (error) {
+          console.error('Error fetching companies:', error);
+          set({ 
+            error: error instanceof Error ? error.message : 'Failed to fetch companies',
+            isLoading: false 
+          });
+        }
+      },
+
+      fetchCompany: async (ticker: string) => {
+        try {
+          const response = await fetch(`/api/data/companies/${ticker}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch company');
+          }
+          const data = await response.json();
+          if (data.success && data.data) {
+            // Update the company in the companies array if it exists
+            const { companies } = get();
+            const updatedCompanies = companies.map(c => 
+              c.ticker === ticker ? data.data : c
+            );
+            // Add it if it doesn't exist
+            if (!companies.find(c => c.ticker === ticker)) {
+              updatedCompanies.push(data.data);
+            }
+            set({ companies: updatedCompanies });
+            get().applyFiltersAndSort();
+            return data.data;
+          } else {
+            throw new Error(data.error || 'Failed to fetch company');
+          }
+        } catch (error) {
+          console.error('Error fetching company:', error);
+          return null;
+        }
       },
 
       // Helper method to apply filters and sorting
@@ -230,3 +295,7 @@ export const useWatchlist = () => useDATStore(state => state.watchlist);
 export const useViewMode = () => useDATStore(state => state.viewMode);
 export const useFilters = () => useDATStore(state => state.filters);
 export const useNews = () => useDATStore(state => state.news);
+export const useIsLoading = () => useDATStore(state => state.isLoading);
+export const useError = () => useDATStore(state => state.error);
+export const useFetchCompanies = () => useDATStore(state => state.fetchCompanies);
+export const useFetchCompany = () => useDATStore(state => state.fetchCompany);

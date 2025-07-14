@@ -1,15 +1,15 @@
 import { prisma } from './prisma';
-import { CryptoType, Company, TreasuryHolding, HistoricalMetric } from '@prisma/client';
+import { CryptoType, Company, TreasuryHolding, HistoricalMetric, TreasuryTransaction } from '@prisma/client';
 import { dbMonitor, optimizedDb } from './performance/db-optimization';
 import { queryCache, CacheKeyGenerator } from './performance/cache-utils';
 
 // Type for company with all related data
 export type CompanyWithRelations = Company & {
-  treasuryHoldings: TreasuryHolding[];
+  treasuryHoldings: (TreasuryHolding & { transactions?: TreasuryTransaction[] })[];
   marketData: any[];
   capitalStructure: any;
-  executiveCompensation: any[];
-  historicalMetrics: HistoricalMetric[];
+  executiveCompensation?: any[];
+  historicalMetrics?: HistoricalMetric[];
 };
 
 /**

@@ -61,9 +61,9 @@ export function TreasuryCompositionChart({
     
     return selectedCompanyData.treasury.map(holding => ({
       name: holding.crypto,
-      value: holding.amount * holding.averageCostBasis,
+      value: holding.currentValue,
       amount: holding.amount,
-      percentage: (holding.amount * holding.averageCostBasis / selectedCompanyData.metrics.treasuryValue) * 100,
+      percentage: (holding.currentValue / selectedCompanyData.metrics.treasuryValue) * 100,
     }));
   }, [selectedCompanyData]);
 
@@ -81,7 +81,7 @@ export function TreasuryCompositionChart({
       
       companies.forEach(company => {
         const holding = company.treasury.find(h => h.crypto === crypto);
-        dataPoint[company.ticker] = holding ? holding.amount * holding.averageCostBasis : 0;
+        dataPoint[company.ticker] = holding ? holding.currentValue : 0;
       });
       
       return dataPoint;
@@ -95,7 +95,7 @@ export function TreasuryCompositionChart({
       children: company.treasury.map(holding => ({
         name: `${company.ticker}-${holding.crypto}`,
         crypto: holding.crypto,
-        value: holding.amount * holding.averageCostBasis,
+        value: holding.currentValue,
         amount: holding.amount,
         company: company.ticker,
       })),
