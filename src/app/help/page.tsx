@@ -88,19 +88,19 @@ export default function HelpPage() {
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Features</h3>
                 <ul className="space-y-1 text-green-500/70 text-sm">
-                  <li>• Real-time treasury tracking</li>
-                  <li>• Premium to NAV calculations</li>
-                  <li>• Performance comparisons</li>
-                  <li>• Keyboard-driven interface</li>
+                  <li>{'•'} Real-time treasury tracking</li>
+                  <li>{'•'} Premium to NAV calculations</li>
+                  <li>{'•'} Performance comparisons</li>
+                  <li>{'•'} Keyboard-driven interface</li>
                 </ul>
               </div>
               <div>
                 <h3 className="text-green-400 font-semibold mb-2">Tech Stack</h3>
                 <ul className="space-y-1 text-green-500/70 text-sm">
-                  <li>• Next.js 15 with TypeScript</li>
-                  <li>• Zustand for state management</li>
-                  <li>• Tailwind CSS for styling</li>
-                  <li>• Recharts for visualizations</li>
+                  <li>{'•'} Next.js 15 with TypeScript</li>
+                  <li>{'•'} Zustand for state management</li>
+                  <li>{'•'} Tailwind CSS for styling</li>
+                  <li>{'•'} Recharts for visualizations</li>
                 </ul>
               </div>
             </div>

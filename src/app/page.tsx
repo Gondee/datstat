@@ -319,8 +319,8 @@ export default function Dashboard() {
 
       {/* Keyboard shortcuts hint */}
       <div className="mt-8 text-center text-[color:var(--terminal-text-muted)] text-xs">
-        Press <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">?</kbd> for help •{' '}
-        <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">/</kbd> to search •{' '}
+        Press <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">?</kbd> for help {'•'}{' '}
+        <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">/</kbd> to search {'•'}{' '}
         <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">⌘K</kbd> for commands
       </div>
     </div>

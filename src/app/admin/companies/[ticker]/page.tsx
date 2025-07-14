@@ -303,7 +303,7 @@ export default function CompanyDetailPage() {
                   <div className="space-y-1">
                     {company.businessModel.revenueStreams.map((stream, index) => (
                       <div key={index} className="text-sm text-[color:var(--terminal-text-primary)]">
-                        • {stream}
+                        {'•'} {stream}
                       </div>
                     ))}
                   </div>
