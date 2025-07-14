@@ -191,6 +191,7 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}
+              isAnimationActive={false}
             />
           ) : (
             <Line
@@ -200,6 +201,7 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 4 }}
+              isAnimationActive={false}
             />
           )}
         </ChartComponent>
@@ -360,6 +362,7 @@ const MultiSeriesChartComponent: React.FC<MultiSeriesChartProps> = ({
                 strokeWidth={2}
                 dot={false}
                 activeDot={{ r: 4 }}
+                isAnimationActive={false}
               />
             );
           })}

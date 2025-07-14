@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, memo } from 'react';
 import {
   LineChart,
   Line,
@@ -55,7 +55,7 @@ const CHART_COLORS = [
   '#EC4899', // Pink
 ];
 
-export function MNavComparisonChart({
+function MNavComparisonChartComponent({
   companies,
   timeRange = '1D',
   showPremiumDiscount = true,
@@ -67,7 +67,6 @@ export function MNavComparisonChart({
   );
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [chartData, setChartData] = useState<MNavDataPoint[]>([]);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   // Set initial timestamp on client side only
@@ -121,38 +120,11 @@ export function MNavComparisonChart({
     return data;
   }, [companies, selectedCompanies, timeRange]);
 
-  // Update chart data
-  useEffect(() => {
-    setChartData(generateHistoricalData);
-  }, [generateHistoricalData]);
+  // Use the generated data directly instead of storing in state
+  const chartData = generateHistoricalData;
 
-  // Handle real-time updates
-  useEffect(() => {
-    if (wsData && connected && autoRefresh) {
-      // Update the latest data point with real-time data
-      setChartData(prev => {
-        const newData = [...prev];
-        const latestPoint = { ...newData[newData.length - 1] };
-        
-        selectedCompanies.forEach(ticker => {
-          const priceData = wsData[`${ticker}_price`];
-          if (priceData) {
-            const company = companies.find(c => c.ticker === ticker);
-            if (company) {
-              latestPoint[`${ticker}_stockPrice`] = priceData.price;
-              // Recalculate premium based on new price
-              const mNav = latestPoint[`${ticker}_mNAV`] as number;
-              latestPoint[`${ticker}_premium`] = ((priceData.price - mNav) / mNav) * 100;
-            }
-          }
-        });
-        
-        newData[newData.length - 1] = latestPoint;
-        setLastUpdate(new Date());
-        return newData;
-      });
-    }
-  }, [wsData, connected, autoRefresh, selectedCompanies, companies]);
+  // Handle real-time updates (disabled for now to prevent re-render loops)
+  // TODO: Implement real-time updates without causing infinite re-renders
 
   const handleCompanyToggle = (ticker: string) => {
     setSelectedCompanies(prev => {
@@ -170,7 +142,6 @@ export function MNavComparisonChart({
     setRefreshing(true);
     // Simulate refresh
     await new Promise(resolve => setTimeout(resolve, 1000));
-    setChartData(generateHistoricalData);
     setLastUpdate(new Date());
     setRefreshing(false);
   };
@@ -239,6 +210,92 @@ export function MNavComparisonChart({
       </div>
     );
   };
+
+  // Memoize the entire chart section to prevent re-renders
+  const chartSection = useMemo(() => (
+    <div style={{ height: isFullscreen ? 'calc(100vh - 200px)' : height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
+          <XAxis
+            dataKey="timestamp"
+            stroke="var(--terminal-text-secondary)"
+            tick={{ fontSize: 11 }}
+          />
+          <YAxis
+            yAxisId="price"
+            stroke="var(--terminal-text-secondary)"
+            tick={{ fontSize: 11 }}
+            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+          />
+          {showPremiumDiscount && (
+            <YAxis
+              yAxisId="premium"
+              orientation="right"
+              stroke="var(--terminal-text-secondary)"
+              tick={{ fontSize: 11 }}
+              tickFormatter={(value) => `${value}%`}
+            />
+          )}
+          
+          <Tooltip content={<CustomTooltip />} />
+          <Legend
+            wrapperStyle={{ fontSize: '12px' }}
+            iconType="line"
+            formatter={(value: string) => {
+              const [ticker, type] = value.split('_');
+              return `${ticker} ${type === 'mNAV' ? 'mNAV' : type === 'stockPrice' ? 'Stock' : 'Premium'}`;
+            }}
+          />
+          
+          <ReferenceLine yAxisId="premium" y={0} stroke="var(--terminal-text-muted)" strokeDasharray="5 5" />
+          
+          {selectedCompanies.map((ticker, index) => (
+            <React.Fragment key={ticker}>
+              <Line
+                yAxisId="price"
+                type="monotone"
+                dataKey={`${ticker}_mNAV`}
+                stroke={CHART_COLORS[index]}
+                strokeWidth={2}
+                dot={false}
+                strokeDasharray="5 5"
+                isAnimationActive={false}
+              />
+              <Line
+                yAxisId="price"
+                type="monotone"
+                dataKey={`${ticker}_stockPrice`}
+                stroke={CHART_COLORS[index]}
+                strokeWidth={2}
+                dot={false}
+                isAnimationActive={false}
+              />
+              {showPremiumDiscount && (
+                <Area
+                  yAxisId="premium"
+                  type="monotone"
+                  dataKey={`${ticker}_premium`}
+                  fill={CHART_COLORS[index]}
+                  fillOpacity={0.1}
+                  stroke="none"
+                  isAnimationActive={false}
+                />
+              )}
+            </React.Fragment>
+          ))}
+          
+          <Brush
+            dataKey="timestamp"
+            height={30}
+            stroke="var(--terminal-border)"
+            fill="var(--terminal-bg-dark)"
+            travellerWidth={10}
+          />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+  ), [chartData, selectedCompanies, showPremiumDiscount, isFullscreen, height, companies]);
 
   return (
     <TerminalCard className={`${isFullscreen ? 'fixed inset-4 z-50' : ''} transition-all`}>
@@ -325,85 +382,7 @@ export function MNavComparisonChart({
         </div>
 
         {/* Chart */}
-        <div style={{ height: isFullscreen ? 'calc(100vh - 200px)' : height }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
-              <XAxis
-                dataKey="timestamp"
-                stroke="var(--terminal-text-secondary)"
-                tick={{ fontSize: 11 }}
-              />
-              <YAxis
-                yAxisId="price"
-                stroke="var(--terminal-text-secondary)"
-                tick={{ fontSize: 11 }}
-                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
-              />
-              {showPremiumDiscount && (
-                <YAxis
-                  yAxisId="premium"
-                  orientation="right"
-                  stroke="var(--terminal-text-secondary)"
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(value) => `${value}%`}
-                />
-              )}
-              
-              <Tooltip content={<CustomTooltip />} />
-              <Legend
-                wrapperStyle={{ fontSize: '12px' }}
-                iconType="line"
-                formatter={(value: string) => {
-                  const [ticker, type] = value.split('_');
-                  return `${ticker} ${type === 'mNAV' ? 'mNAV' : type === 'stockPrice' ? 'Stock' : 'Premium'}`;
-                }}
-              />
-              
-              <ReferenceLine yAxisId="premium" y={0} stroke="var(--terminal-text-muted)" strokeDasharray="5 5" />
-              
-              {selectedCompanies.map((ticker, index) => (
-                <React.Fragment key={ticker}>
-                  <Line
-                    yAxisId="price"
-                    type="monotone"
-                    dataKey={`${ticker}_mNAV`}
-                    stroke={CHART_COLORS[index]}
-                    strokeWidth={2}
-                    dot={false}
-                    strokeDasharray="5 5"
-                  />
-                  <Line
-                    yAxisId="price"
-                    type="monotone"
-                    dataKey={`${ticker}_stockPrice`}
-                    stroke={CHART_COLORS[index]}
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                  {showPremiumDiscount && (
-                    <Area
-                      yAxisId="premium"
-                      type="monotone"
-                      dataKey={`${ticker}_premium`}
-                      fill={CHART_COLORS[index]}
-                      fillOpacity={0.1}
-                      stroke="none"
-                    />
-                  )}
-                </React.Fragment>
-              ))}
-              
-              <Brush
-                dataKey="timestamp"
-                height={30}
-                stroke="var(--terminal-border)"
-                fill="var(--terminal-bg-dark)"
-                travellerWidth={10}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+        {chartSection}
 
         {/* Legend Summary */}
         <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -454,3 +433,5 @@ export function MNavComparisonChart({
     </TerminalCard>
   );
 }
+
+export const MNavComparisonChart = memo(MNavComparisonChartComponent);
