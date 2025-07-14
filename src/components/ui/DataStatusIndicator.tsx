@@ -152,7 +152,7 @@ export function DataStatusIndicator({
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-xs text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-primary)] transition-colors"
           >
-            {isExpanded ? 'Hide' : 'Show'} Details
+            <span>{isExpanded ? 'Hide' : 'Show'} Details</span>
           </button>
         )}
       </div>
@@ -181,7 +181,7 @@ export function DataStatusIndicator({
             <div className="flex items-center space-x-1">
               {getHealthIcon(overallHealth)}
               <span className="font-mono text-xs">
-                {dataSources.filter(s => s.status === 'healthy').length}/{dataSources.length} healthy
+                <span>{dataSources.filter(s => s.status === 'healthy').length}/{dataSources.length} healthy</span>
               </span>
             </div>
           </div>
@@ -204,7 +204,7 @@ export function DataStatusIndicator({
                     )}
                     {source.errorRate > 0 && (
                       <span className="text-red-500">
-                        {source.errorRate} errors
+                        <span>{source.errorRate} errors</span>
                       </span>
                     )}
                   </div>

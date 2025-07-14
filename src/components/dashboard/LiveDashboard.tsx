@@ -242,7 +242,7 @@ export function LiveDashboard({ companies, initialMarketData }: LiveDashboardPro
                         : 'text-[color:var(--terminal-danger)]'
                       }
                     `}>
-                      {premium >= 0 && '+'}{formatPercentage(premium)} NAV
+                      <span>{premium >= 0 && '+'}</span>{formatPercentage(premium)} NAV
                     </div>
                     <div className="text-[color:var(--terminal-text-muted)] text-xs">
                       vs mNAV: {formatCurrency(navData || 0)}

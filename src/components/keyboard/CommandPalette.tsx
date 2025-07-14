@@ -251,7 +251,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           {/* Footer */}
           <div className="border-t border-[color:var(--terminal-border)] px-4 py-2 text-xs text-[color:var(--terminal-text-secondary)]">
             <div className="flex items-center justify-between font-mono">
-              <span>↑↓ navigate • ↵ select • esc close</span>
+              <span>↑↓ navigate <span>•</span> ↵ select <span>•</span> esc close</span>
               {recentCommands.length > 0 && !query && (
                 <div className="flex items-center">
                   <Clock className="mr-1 h-3 w-3" />

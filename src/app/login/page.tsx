@@ -118,7 +118,7 @@ export default function LoginPage() {
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-[color:var(--terminal-border)]">
             <p className="text-center text-xs text-[color:var(--terminal-text-muted)]">
-              Authorized personnel only • All access logged
+              Authorized personnel only <span>•</span> All access logged
             </p>
           </div>
         </TerminalCard>

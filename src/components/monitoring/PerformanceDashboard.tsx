@@ -340,7 +340,7 @@ export function PerformanceDashboard({ refreshInterval = 30000 }: PerformanceDas
                 />
               </div>
               <p className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
-                {metrics.cache.api.size} / {metrics.cache.api.maxSize} entries
+                <span>{metrics.cache.api.size} / {metrics.cache.api.maxSize} entries</span>
               </p>
             </div>
           </TerminalCard>
@@ -357,7 +357,7 @@ export function PerformanceDashboard({ refreshInterval = 30000 }: PerformanceDas
                 />
               </div>
               <p className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
-                {metrics.cache.query.l1.size} / {metrics.cache.query.l1.maxSize} entries
+                <span>{metrics.cache.query.l1.size} / {metrics.cache.query.l1.maxSize} entries</span>
               </p>
             </div>
           </TerminalCard>
@@ -374,7 +374,7 @@ export function PerformanceDashboard({ refreshInterval = 30000 }: PerformanceDas
                 />
               </div>
               <p className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
-                {metrics.cache.calculation.size} / {metrics.cache.calculation.maxSize} entries
+                <span>{metrics.cache.calculation.size} / {metrics.cache.calculation.maxSize} entries</span>
               </p>
             </div>
           </TerminalCard>

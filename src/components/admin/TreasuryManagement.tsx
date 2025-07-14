@@ -543,7 +543,7 @@ export default function TreasuryManagement({ company, onUpdateTreasury }: Treasu
                       {tx.amount.toLocaleString()} {tx.crypto}
                     </p>
                     <p className="text-sm text-[color:var(--terminal-text-secondary)]">
-                      {new Date(tx.date).toLocaleDateString()} • ${tx.pricePerUnit.toLocaleString()} per unit
+                      {new Date(tx.date).toLocaleDateString()} <span>•</span> ${tx.pricePerUnit.toLocaleString()} per unit
                     </p>
                   </div>
                 </div>
@@ -739,7 +739,7 @@ export default function TreasuryManagement({ company, onUpdateTreasury }: Treasu
                   <div className="max-h-40 overflow-y-auto space-y-2">
                     {importPreview.map((tx, index) => (
                       <div key={index} className="text-xs font-mono text-[color:var(--terminal-text-primary)] p-2 rounded border border-[color:var(--terminal-border)]">
-                        {tx.date} • {tx.crypto} • {tx.type} • {tx.amount} @ ${tx.pricePerUnit}
+                        {tx.date} <span>•</span> {tx.crypto} <span>•</span> {tx.type} <span>•</span> {tx.amount} @ ${tx.pricePerUnit}
                       </div>
                     ))}
                   </div>

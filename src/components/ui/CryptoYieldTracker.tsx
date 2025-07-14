@@ -51,7 +51,7 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
               yieldMomentum >= 0 ? 'text-[color:var(--terminal-success)]' : 'text-[color:var(--terminal-danger)]'
             }`}>
               {yieldMomentum >= 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
-              {yieldMomentum >= 0 ? '+' : ''}{formatPercentage(yieldMomentum)} vs previous
+              <span>{yieldMomentum >= 0 && '+'}</span>{formatPercentage(yieldMomentum)} vs previous
             </div>
           </div>
 
