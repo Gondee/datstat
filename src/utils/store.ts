@@ -75,7 +75,6 @@ export const useDATStore = create<DATState>()(
       // Actions
       setCompanies: (companies) => {
         set({ companies });
-        get().applyFiltersAndSort();
       },
 
       setNews: (news) => set({ news }),
@@ -113,20 +112,17 @@ export const useDATStore = create<DATState>()(
       updateFilters: (newFilters) => {
         const { filters } = get();
         set({ filters: { ...filters, ...newFilters } });
-        get().applyFiltersAndSort();
       },
 
       setSorting: (field, direction) => {
         const { sortField, sortDirection } = get();
         const newDirection = direction || (field === sortField && sortDirection === 'desc' ? 'asc' : 'desc');
         set({ sortField: field, sortDirection: newDirection });
-        get().applyFiltersAndSort();
       },
 
       refreshData: () => {
         // In a real app, this would fetch fresh data from APIs
         set({ companies: companiesWithMetrics, news: newsItems });
-        get().applyFiltersAndSort();
       },
 
       // Helper method to apply filters and sorting
@@ -201,11 +197,11 @@ export const useDATStore = create<DATState>()(
           
           if (typeof aValue === 'string') {
             return sortDirection === 'asc' 
-              ? aValue.localeCompare(bValue)
-              : bValue.localeCompare(aValue);
+              ? aValue.localeCompare(bValue as string)
+              : (bValue as string).localeCompare(aValue);
           }
           
-          return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+          return sortDirection === 'asc' ? (aValue as number) - (bValue as number) : (bValue as number) - (aValue as number);
         });
         
         set({ filteredCompanies: filtered });
@@ -225,7 +221,6 @@ export const useDATStore = create<DATState>()(
 );
 
 // Initialize the computed state
-useDATStore.getState().applyFiltersAndSort();
 
 // Selector hooks for performance
 export const useCompanies = () => useDATStore(state => state.filteredCompanies);

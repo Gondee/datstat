@@ -62,10 +62,10 @@ export default function Dashboard() {
       label: 'Ticker',
       sortable: true,
       width: '100px',
-      render: (value, row) => (
+      render: (value) => (
         <div className="flex items-center space-x-2">
-          <span className="font-bold text-green-400">{value}</span>
-          {watchlist.includes(value) && (
+          <span className="font-bold text-green-400">{value as string}</span>
+          {watchlist.includes(value as string) && (
             <Eye className="w-3 h-3 text-amber-400" />
           )}
         </div>
@@ -76,7 +76,7 @@ export default function Dashboard() {
       label: 'Company',
       sortable: true,
       render: (value) => (
-        <span className="text-green-100 truncate max-w-[200px] block">{value}</span>
+        <span className="text-green-100 truncate max-w-[200px] block">{value as string}</span>
       ),
     },
     {
@@ -130,7 +130,7 @@ export default function Dashboard() {
       ),
     },
     {
-      key: 'actions',
+      key: 'actions' as keyof CompanyWithMetrics,
       label: 'Actions',
       width: '120px',
       render: (_, row) => (
@@ -211,13 +211,16 @@ export default function Dashboard() {
 
         {/* Search Bar */}
         <div className="max-w-md">
-          <TerminalInput
-            ref={searchInputRef}
-            placeholder="Search companies (press / to focus)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            prefix={<Search className="w-4 h-4" />}
-          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500/70" />
+            <TerminalInput
+              ref={searchInputRef}
+              placeholder="Search companies (press / to focus)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
         </div>
       </div>
 
@@ -246,11 +249,14 @@ export default function Dashboard() {
       {viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredCompanies.map((company) => (
-            <TerminalCard
+            <div
               key={company.ticker}
-              className="cursor-pointer hover:border-green-400/70 transition-colors"
+              className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => router.push(`/company/${company.ticker}`)}
             >
+              <TerminalCard
+                className="hover:border-green-400/70 transition-colors"
+              >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -292,15 +298,16 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </TerminalCard>
+              </TerminalCard>
+            </div>
           ))}
         </div>
       ) : (
         <TerminalCard>
           <DataTable
-            data={filteredCompanies}
-            columns={columns}
-            onRowClick={(company) => router.push(`/company/${company.ticker}`)}
+            data={filteredCompanies as unknown as Record<string, unknown>[]}
+            columns={columns as unknown as Column<Record<string, unknown>>[]}
+            onRowClick={(company) => router.push(`/company/${(company as unknown as CompanyWithMetrics).ticker}`)}
             keyboardNavigation={true}
           />
         </TerminalCard>

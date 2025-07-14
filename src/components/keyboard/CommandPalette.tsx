@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, ArrowRight, Clock, Building2, TrendingUp, Newspaper, Settings, BarChart3, HelpCircle } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -114,7 +114,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   }, {} as Record<string, Command[]>);
 
   // Handle command execution
-  const executeCommand = (command: Command) => {
+  const executeCommand = useCallback((command: Command) => {
     command.action();
     
     // Add to recent commands
@@ -125,7 +125,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
     });
     
     onClose();
-  };
+  }, [onClose]);
 
   // Keyboard navigation
   useEffect(() => {
