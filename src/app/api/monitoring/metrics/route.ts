@@ -5,6 +5,9 @@ import { errorTracker } from '@/lib/performance/monitoring';
 import { apiCache, queryCache, calculationCache } from '@/lib/performance/cache-utils';
 import { createOptimizedAPIHandler } from '@/lib/performance/api-optimization';
 
+// Force Node.js runtime for database operations
+export const runtime = 'nodejs';
+
 // GET /api/monitoring/metrics - Get performance metrics
 export const GET = createOptimizedAPIHandler(
   async (request: NextRequest) => {

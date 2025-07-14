@@ -34,16 +34,18 @@ export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 // Prevent multiple instances in development (hot reload issue)
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
-// Graceful shutdown handler
-async function gracefulShutdown() {
-  console.log('Closing database connections...');
-  await prisma.$disconnect();
-  process.exit(0);
-}
+// Graceful shutdown handler - only in Node.js runtime
+if (typeof process !== 'undefined' && process.on) {
+  async function gracefulShutdown() {
+    console.log('Closing database connections...');
+    await prisma.$disconnect();
+    process.exit(0);
+  }
 
-// Handle shutdown signals
-process.on('SIGINT', gracefulShutdown);
-process.on('SIGTERM', gracefulShutdown);
+  // Handle shutdown signals
+  process.on('SIGINT', gracefulShutdown);
+  process.on('SIGTERM', gracefulShutdown);
+}
 
 // Database connection health check
 export async function checkDatabaseConnection(): Promise<boolean> {

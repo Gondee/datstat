@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { systemMonitor, getMetricsDashboard } from '@/lib/performance/monitoring';
 import { createOptimizedAPIHandler } from '@/lib/performance/api-optimization';
 
+// Force Node.js runtime for database operations
+export const runtime = 'nodejs';
+
 // GET /api/monitoring/health - Get system health status
 export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
@@ -28,9 +31,8 @@ export async function GET(request: NextRequest) {
           message: check.message
         })),
         system: {
-          cpu: health.system.cpu.usage.toFixed(2) + '%',
-          memory: health.system.memory.percentUsed.toFixed(2) + '%',
-          uptime: Math.floor(health.system.process.uptime / 60) + ' minutes'
+          uptime: process.uptime(),
+          timestamp: new Date().toISOString()
         }
       });
     }

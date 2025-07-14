@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAccessToken, hasPermission } from '@/lib/auth';
 import type { Role } from '@prisma/client';
-import { performanceMiddleware } from '@/lib/performance/startup';
+import { performanceMiddleware } from '@/lib/performance/middleware';
 
 // Route-to-role mapping
 const PROTECTED_ROUTES: Record<string, Role> = {
