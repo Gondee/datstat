@@ -255,6 +255,9 @@ export function useWebSocketData(url: string) {
   const [data, setData] = React.useState<any>({});
 
   React.useEffect(() => {
+    if (!url) {
+      return;
+    }
     const wsClient = new WebSocketDataClient(url);
     
     wsClient.on('connected', () => {
@@ -286,11 +289,13 @@ export function useWebSocketData(url: string) {
 
     setClient(wsClient);
 
-    // Auto-connect
-    wsClient.connect().catch((err) => {
-      console.error('Failed to connect to WebSocket:', err);
-      setError(err);
-    });
+    // Auto-connect only if URL is provided
+    if (url) {
+      wsClient.connect().catch((err) => {
+        console.error('Failed to connect to WebSocket:', err);
+        setError(err);
+      });
+    }
 
     return () => {
       wsClient.disconnect();
