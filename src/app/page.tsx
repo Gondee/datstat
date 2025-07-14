@@ -212,7 +212,7 @@ export default function Dashboard() {
         {/* Search Bar */}
         <div className="max-w-md">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500/70" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[color:var(--terminal-text-secondary)]" />
             <TerminalInput
               ref={searchInputRef}
               placeholder="Search companies (press / to focus)"
@@ -255,12 +255,12 @@ export default function Dashboard() {
               onClick={() => router.push(`/company/${company.ticker}`)}
             >
               <TerminalCard
-                className="hover:border-green-400/70 transition-colors"
+                className="hover:border-[color:var(--terminal-accent)]/70 transition-colors"
               >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold text-green-400 text-lg">{company.ticker}</span>
+                    <span className="font-bold text-[color:var(--terminal-accent)] text-lg">{company.ticker}</span>
                     {watchlist.includes(company.ticker) && (
                       <Eye className="w-4 h-4 text-amber-400" />
                     )}
@@ -271,27 +271,27 @@ export default function Dashboard() {
                 </div>
                 
                 <div>
-                  <h3 className="text-green-100 font-medium text-sm truncate">
+                  <h3 className="text-[color:var(--terminal-text-primary)] font-medium text-sm truncate">
                     {company.name}
                   </h3>
-                  <p className="text-green-500/70 text-xs">{company.sector}</p>
+                  <p className="text-[color:var(--terminal-text-secondary)] text-xs">{company.sector}</p>
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-green-500/70 text-xs">Treasury Value</span>
-                    <span className="text-green-100 font-mono text-sm">
+                    <span className="text-[color:var(--terminal-text-secondary)] text-xs">Treasury Value</span>
+                    <span className="text-[color:var(--terminal-text-primary)] font-mono text-sm">
                       {formatCurrency(company.metrics.treasuryValue, 0)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-500/70 text-xs">Stock Price</span>
-                    <span className="text-green-100 font-mono text-sm">
+                    <span className="text-[color:var(--terminal-text-secondary)] text-xs">Stock Price</span>
+                    <span className="text-[color:var(--terminal-text-primary)] font-mono text-sm">
                       {formatCurrency(company.marketData.price)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-green-500/70 text-xs">Premium to NAV</span>
+                    <span className="text-[color:var(--terminal-text-secondary)] text-xs">Premium to NAV</span>
                     <span className={`font-mono text-sm ${getChangeColor(company.metrics.premiumToNavPercent)}`}>
                       {formatPercentage(company.metrics.premiumToNavPercent)}
                     </span>
@@ -314,10 +314,10 @@ export default function Dashboard() {
       )}
 
       {/* Keyboard shortcuts hint */}
-      <div className="mt-8 text-center text-green-500/50 text-xs">
-        Press <kbd className="px-1 py-0.5 bg-green-500/20 rounded">?</kbd> for help •{' '}
-        <kbd className="px-1 py-0.5 bg-green-500/20 rounded">/</kbd> to search •{' '}
-        <kbd className="px-1 py-0.5 bg-green-500/20 rounded">⌘K</kbd> for commands
+      <div className="mt-8 text-center text-[color:var(--terminal-text-muted)] text-xs">
+        Press <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">?</kbd> for help •{' '}
+        <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">/</kbd> to search •{' '}
+        <kbd className="px-1 py-0.5 bg-[color:var(--terminal-accent)]/20 rounded">⌘K</kbd> for commands
       </div>
     </div>
   );
