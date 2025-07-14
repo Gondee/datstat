@@ -155,7 +155,7 @@ export function DataTable<T extends Record<string, unknown>>({
           <tbody>
             {sortedData.map((row, index) => (
               <tr
-                key={row.id || row.ticker || `row-${index}`}
+                key={(row as any).id || (row as any).ticker || `row-${index}`}
                 className={rowClasses(index)}
                 data-index={index}
                 data-selected={selectedIndex === index}
