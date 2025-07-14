@@ -294,13 +294,14 @@ export function useWebSocketData<T = any>(
   // Auto-connect and subscribe on mount
   useEffect(() => {
     // Only connect if a URL is provided
-    if (options?.url || process.env.NEXT_PUBLIC_WS_URL) {
+    const wsUrl = options?.url || process.env.NEXT_PUBLIC_WS_URL;
+    if (wsUrl && wsUrl.trim() !== '') {
       wsActions.connect();
+      
+      return () => {
+        wsActions.disconnect();
+      };
     }
-    
-    return () => {
-      wsActions.disconnect();
-    };
   }, [wsActions, options?.url]);
 
   // Subscribe to initial channels
@@ -391,13 +392,14 @@ export function useWebSocketStatus(options?: WebSocketOptions) {
   
   useEffect(() => {
     // Only connect if a URL is provided
-    if (options?.url || process.env.NEXT_PUBLIC_WS_URL) {
+    const wsUrl = options?.url || process.env.NEXT_PUBLIC_WS_URL;
+    if (wsUrl && wsUrl.trim() !== '') {
       wsActions.connect();
+      
+      return () => {
+        wsActions.disconnect();
+      };
     }
-    
-    return () => {
-      wsActions.disconnect();
-    };
   }, [wsActions, options?.url]);
 
   return {
