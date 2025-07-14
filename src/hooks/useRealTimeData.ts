@@ -37,8 +37,8 @@ export function useRealTimeCompanyData(
     error: wsError,
     lastUpdated: wsLastUpdated,
   } = useWebSocketData([`stocks:${ticker}`], {
-    url: 'ws://localhost:8080/ws/data',
-    autoReconnect: true,
+    url: process.env.NEXT_PUBLIC_WS_URL || '',
+    autoReconnect: false,
   });
 
   // Data freshness tracking

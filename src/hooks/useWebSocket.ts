@@ -36,9 +36,9 @@ export interface WebSocketActions {
 }
 
 const DEFAULT_OPTIONS: WebSocketOptions = {
-  url: 'ws://localhost:8080/ws/data',
-  autoReconnect: true,
-  reconnectAttempts: 5,
+  url: process.env.NEXT_PUBLIC_WS_URL || '',
+  autoReconnect: false, // Disable WebSocket for now since Vercel doesn't support it
+  reconnectAttempts: 0,
   reconnectInterval: 3000,
   heartbeatInterval: 30000,
   debug: false,
@@ -104,6 +104,12 @@ export function useWebSocket(
   }, [log]);
 
   const connect = useCallback(() => {
+    // Skip connection if no URL provided (WebSocket disabled)
+    if (!opts.url) {
+      log('info', 'WebSocket disabled - no URL provided');
+      return;
+    }
+    
     if (state.isConnecting || state.isConnected) {
       log('warn', 'Already connected or connecting');
       return;
@@ -113,7 +119,7 @@ export function useWebSocket(
     log('info', `Connecting to ${opts.url}`);
 
     try {
-      ws.current = new WebSocket(opts.url!);
+      ws.current = new WebSocket(opts.url);
 
       ws.current.onopen = () => {
         log('info', 'WebSocket connected');

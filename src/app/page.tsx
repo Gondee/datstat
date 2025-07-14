@@ -161,7 +161,7 @@ export default function Dashboard() {
               addToComparison(row.ticker);
             }}
           >
-            +
+            {'+'}
           </TerminalButton>
         </div>
       ),
