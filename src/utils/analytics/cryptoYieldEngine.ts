@@ -395,9 +395,9 @@ export class CryptoYieldEngine {
     totalYield: number
   ): Promise<YieldComparison[]> {
     // Get all companies for comparison
-    const companies = await this.prisma.companies.findMany({
+    const companies = await this.prisma.company.findMany({
       include: {
-        treasury_holdings: true
+        treasuryHoldings: true
       }
     });
     
@@ -445,16 +445,16 @@ export class CryptoYieldEngine {
   ): Promise<number> {
     const startDate = this.getStartDate(timeFrame);
     
-    const historical = await this.prisma.historical_metrics.findFirst({
+    const historical = await this.prisma.historicalMetric.findFirst({
       where: {
-        ticker,
+        companyId: ticker,
         date: { gte: startDate },
-        shares_diluted: { not: null }
+        sharesDiluted: { not: undefined }
       },
       orderBy: { date: 'asc' }
     });
     
-    return historical?.shares_diluted || 100000000; // Default 100M shares
+    return historical?.sharesDiluted || 100000000; // Default 100M shares
   }
 
   private async getPreviousHoldingAmount(

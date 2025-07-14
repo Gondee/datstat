@@ -69,7 +69,7 @@ export function RiskVisualizationDashboard({
       { metric: 'Market Risk', value: Math.random() * 100, max: 100 },
       { metric: 'Liquidity Risk', value: Math.random() * 100, max: 100 },
       { metric: 'Concentration Risk', value: Math.random() * 100, max: 100 },
-      { metric: 'Volatility Risk', value: selectedCompanyData.marketData.volatility30d || 50, max: 100 },
+      { metric: 'Volatility Risk', value: Math.abs(selectedCompanyData.marketData.change24hPercent) || 50, max: 100 },
       { metric: 'Regulatory Risk', value: Math.random() * 100, max: 100 },
       { metric: 'Operational Risk', value: Math.random() * 100, max: 100 },
     ];
@@ -114,7 +114,7 @@ export function RiskVisualizationDashboard({
     const totalValue = selectedCompanyData.metrics.treasuryValue;
     
     return selectedCompanyData.treasury.map(holding => {
-      const percentage = (holding.amount * holding.avgCost) / totalValue * 100;
+      const percentage = (holding.amount * holding.averageCostBasis) / totalValue * 100;
       return {
         name: holding.crypto,
         value: percentage,
@@ -300,7 +300,7 @@ export function RiskVisualizationDashboard({
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, value }) => `${name}: ${value.toFixed(1)}%`}
+                  label={({ name, value }) => `${name}: ${value?.toFixed(1) || 0}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"

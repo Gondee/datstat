@@ -83,10 +83,17 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(containerRef, {
+  const observerRef = useRef<Element>(null);
+  const isVisible = useIntersectionObserver(observerRef, {
     threshold: 0.1,
     rootMargin: '50px'
   });
+
+  // Callback ref to set both refs
+  const setRefs = useCallback((node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    observerRef.current = node;
+  }, []);
 
   // Debounce data updates if throttling is enabled
   const debouncedData = useDebounce(data, throttleUpdates ? 500 : 0);
@@ -126,7 +133,7 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
   if (lazyLoad && !isVisible) {
     return (
       <div 
-        ref={containerRef} 
+        ref={setRefs} 
         className={className}
         style={{ height, backgroundColor: 'var(--terminal-bg-dark)' }}
       >
@@ -138,10 +145,9 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
   }
 
   const ChartComponent = type === 'area' ? AreaChart : LineChart;
-  const DataComponent = type === 'area' ? Area : Line;
 
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={setRefs} className={className}>
       <ResponsiveContainer width="100%" height={height}>
         <ChartComponent
           data={processedData}
@@ -175,16 +181,27 @@ const OptimizedChartComponent: React.FC<OptimizedChartProps> = ({
               wrapperStyle={{ fontSize: '12px' }}
             />
           )}
-          <DataComponent
-            type="monotone"
-            dataKey={dataKey}
-            stroke={color}
-            fill={type === 'area' ? color : undefined}
-            fillOpacity={type === 'area' ? 0.3 : undefined}
-            strokeWidth={2}
-            dot={false}
-            activeDot={{ r: 4 }}
-          />
+          {type === 'area' ? (
+            <Area
+              type="monotone"
+              dataKey={dataKey}
+              stroke={color}
+              fill={color}
+              fillOpacity={0.3}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4 }}
+            />
+          ) : (
+            <Line
+              type="monotone"
+              dataKey={dataKey}
+              stroke={color}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 4 }}
+            />
+          )}
         </ChartComponent>
       </ResponsiveContainer>
     </div>
@@ -240,10 +257,17 @@ const MultiSeriesChartComponent: React.FC<MultiSeriesChartProps> = ({
   className = ''
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const isVisible = useIntersectionObserver(containerRef, {
+  const observerRef = useRef<Element>(null);
+  const isVisible = useIntersectionObserver(observerRef, {
     threshold: 0.1,
     rootMargin: '50px'
   });
+
+  // Callback ref to set both refs
+  const setRefs = useCallback((node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    observerRef.current = node;
+  }, []);
 
   const debouncedData = useDebounce(data, throttleUpdates ? 500 : 0);
 
@@ -261,7 +285,7 @@ const MultiSeriesChartComponent: React.FC<MultiSeriesChartProps> = ({
   if (lazyLoad && !isVisible) {
     return (
       <div 
-        ref={containerRef} 
+        ref={setRefs} 
         className={className}
         style={{ height, backgroundColor: 'var(--terminal-bg-dark)' }}
       >
@@ -277,7 +301,7 @@ const MultiSeriesChartComponent: React.FC<MultiSeriesChartProps> = ({
   const ChartComponent = hasArea ? AreaChart : LineChart;
 
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={setRefs} className={className}>
       <ResponsiveContainer width="100%" height={height}>
         <ChartComponent
           data={processedData}

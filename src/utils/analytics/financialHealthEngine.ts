@@ -554,7 +554,7 @@ export class FinancialHealthEngine {
     if (growth.growthRating === 'Negative' || solvency.solvencyRating === 'Critical') {
       return 'Negative';
     }
-    if (overallScore >= 70 && growth.growthRating !== 'Negative') {
+    if (overallScore >= 70 && (growth.growthRating === 'High' || growth.growthRating === 'Moderate' || growth.growthRating === 'Low')) {
       return 'Positive';
     }
     if (overallScore < 50) {

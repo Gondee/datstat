@@ -130,11 +130,11 @@ class CoinGeckoService {
       const data = response.data;
       const cryptoPrice: CryptoPrice = {
         symbol: crypto,
-        price: data.market_data?.current_price?.usd || 0,
-        change24h: data.market_data?.price_change_24h || 0,
-        change24hPercent: data.market_data?.price_change_percentage_24h || 0,
-        marketCap: data.market_data?.market_cap?.usd || 0,
-        volume24h: data.market_data?.total_volume?.usd || 0,
+        price: data.current_price || 0,
+        change24h: data.price_change_24h || 0,
+        change24hPercent: data.price_change_percentage_24h || 0,
+        marketCap: data.market_cap || 0,
+        volume24h: data.total_volume || 0,
         timestamp: new Date().toISOString(),
       };
 

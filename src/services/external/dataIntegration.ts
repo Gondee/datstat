@@ -149,32 +149,40 @@ class DataIntegrationService {
       
       // Update database
       for (const [symbol, price] of Object.entries(result.data)) {
-        await prisma.marketData.upsert({
+        // Find existing record
+        const existing = await prisma.marketData.findFirst({
           where: {
-            ticker_timestamp: {
-              ticker: symbol,
-              timestamp: new Date(price.timestamp),
-            },
-          },
-          update: {
-            price: price.price,
-            change24h: price.change24h,
-            change24hPercent: price.change24hPercent,
-            volume24h: price.volume24h,
-            marketCap: price.marketCap,
-            updatedAt: new Date(),
-          },
-          create: {
             ticker: symbol,
-            symbol: symbol as CryptoType,
-            price: price.price,
-            change24h: price.change24h,
-            change24hPercent: price.change24hPercent,
-            volume24h: price.volume24h,
-            marketCap: price.marketCap,
             timestamp: new Date(price.timestamp),
           },
         });
+
+        if (existing) {
+          await prisma.marketData.update({
+            where: { id: existing.id },
+            data: {
+              price: price.price,
+              change24h: price.change24h,
+              change24hPercent: price.change24hPercent,
+              volume24h: price.volume24h,
+              marketCap: price.marketCap,
+              updatedAt: new Date(),
+            },
+          });
+        } else {
+          await prisma.marketData.create({
+            data: {
+              ticker: symbol,
+              symbol: symbol as CryptoType,
+              price: price.price,
+              change24h: price.change24h,
+              change24hPercent: price.change24hPercent,
+              volume24h: price.volume24h,
+              marketCap: price.marketCap,
+              timestamp: new Date(price.timestamp),
+            },
+          });
+        }
       }
 
       const latency = Date.now() - startTime;
@@ -207,34 +215,42 @@ class DataIntegrationService {
         });
 
         if (company) {
-          await prisma.marketData.upsert({
+          // Find existing record
+          const existing = await prisma.marketData.findFirst({
             where: {
-              ticker_timestamp: {
-                ticker: symbol,
-                timestamp: new Date(marketData.timestamp),
-              },
-            },
-            update: {
-              price: marketData.price,
-              change24h: marketData.change24h,
-              change24hPercent: marketData.change24hPercent,
-              volume24h: marketData.volume24h,
-              high24h: marketData.high24h,
-              low24h: marketData.low24h,
-              updatedAt: new Date(),
-            },
-            create: {
               ticker: symbol,
-              companyId: company.id,
-              price: marketData.price,
-              change24h: marketData.change24h,
-              change24hPercent: marketData.change24hPercent,
-              volume24h: marketData.volume24h,
-              high24h: marketData.high24h,
-              low24h: marketData.low24h,
               timestamp: new Date(marketData.timestamp),
             },
           });
+
+          if (existing) {
+            await prisma.marketData.update({
+              where: { id: existing.id },
+              data: {
+                price: marketData.price,
+                change24h: marketData.change24h,
+                change24hPercent: marketData.change24hPercent,
+                volume24h: marketData.volume24h,
+                high24h: marketData.high24h,
+                low24h: marketData.low24h,
+                updatedAt: new Date(),
+              },
+            });
+          } else {
+            await prisma.marketData.create({
+              data: {
+                ticker: symbol,
+                companyId: company.id,
+                price: marketData.price,
+                change24h: marketData.change24h,
+                change24hPercent: marketData.change24hPercent,
+                volume24h: marketData.volume24h,
+                high24h: marketData.high24h,
+                low24h: marketData.low24h,
+                timestamp: new Date(marketData.timestamp),
+              },
+            });
+          }
 
           await prisma.company.update({
             where: { id: company.id },

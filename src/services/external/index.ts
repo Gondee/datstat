@@ -20,6 +20,15 @@ export { WebSocketDataClient, useWebSocketData } from './websocket/client';
 
 export * from './types';
 
+// Import services for internal use
+import { coinGeckoService } from './apis/coinGeckoService';
+import { alphaVantageService } from './apis/alphaVantageService';
+import { secEdgarService } from './apis/secEdgarService';
+import { dataIntegrationService } from './dataIntegration';
+import { logger } from './utils/logger';
+import { alertingService } from './monitoring/alerting';
+import { cache } from './utils/cache';
+
 // Service health check utility
 export async function getAllServiceHealth() {
   const [cryptoHealth, stockHealth, filingHealth, integrationHealth] = await Promise.allSettled([

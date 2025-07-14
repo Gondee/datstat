@@ -202,16 +202,17 @@ export class EnhancedNAVEngine {
     ticker: string,
     calculation: NAVCalculation
   ): Promise<void> {
-    await this.prisma.historical_metrics.create({
+    await this.prisma.historicalMetric.create({
       data: {
-        ticker,
+        companyId: ticker,
         date: calculation.timestamp,
-        nav_per_share: calculation.assumedDilutedNAVPerShare,
-        premium_to_nav: calculation.premiumDiscount.toAssumedDilutedNAVPercent,
-        treasury_value: calculation.components.treasuryValue,
-        shares_diluted: calculation.shareCountDetails.assumedDiluted,
-        metric_type: 'nav_calculation',
-        metadata: calculation as any
+        stockPrice: 0, // TODO: Get actual stock price
+        navPerShare: calculation.assumedDilutedNAVPerShare,
+        premiumToNav: calculation.premiumDiscount.toAssumedDilutedNAVPercent,
+        treasuryValue: calculation.components.treasuryValue,
+        volume: 0, // TODO: Get actual volume
+        sharesOutstanding: calculation.shareCountDetails.basic,
+        sharesDiluted: calculation.shareCountDetails.assumedDiluted
       }
     });
   }
@@ -288,14 +289,13 @@ export class EnhancedNAVEngine {
     premiumToNav: number;
     treasuryValue: number;
   }>> {
-    const historicalData = await this.prisma.historical_metrics.findMany({
+    const historicalData = await this.prisma.historicalMetric.findMany({
       where: {
-        ticker,
+        companyId: ticker,
         date: {
           gte: startDate,
           lte: endDate
-        },
-        metric_type: 'nav_calculation'
+        }
       },
       orderBy: {
         date: 'asc'
@@ -304,9 +304,9 @@ export class EnhancedNAVEngine {
     
     return historicalData.map(point => ({
       date: point.date,
-      navPerShare: point.nav_per_share || 0,
-      premiumToNav: point.premium_to_nav || 0,
-      treasuryValue: point.treasury_value || 0
+      navPerShare: point.navPerShare || 0,
+      premiumToNav: point.premiumToNav || 0,
+      treasuryValue: point.treasuryValue || 0
     }));
   }
 
@@ -324,20 +324,18 @@ export class EnhancedNAVEngine {
     dilutionImpact: number;
     otherFactors: number;
   }> {
-    const startData = await this.prisma.historical_metrics.findFirst({
+    const startData = await this.prisma.historicalMetric.findFirst({
       where: {
-        ticker,
-        date: { gte: startDate },
-        metric_type: 'nav_calculation'
+        companyId: ticker,
+        date: { gte: startDate }
       },
       orderBy: { date: 'asc' }
     });
     
-    const endData = await this.prisma.historical_metrics.findFirst({
+    const endData = await this.prisma.historicalMetric.findFirst({
       where: {
-        ticker,
-        date: { lte: endDate },
-        metric_type: 'nav_calculation'
+        companyId: ticker,
+        date: { lte: endDate }
       },
       orderBy: { date: 'desc' }
     });
@@ -352,25 +350,22 @@ export class EnhancedNAVEngine {
       };
     }
     
-    const startNAV = startData.nav_per_share || 0;
-    const endNAV = endData.nav_per_share || 0;
+    const startNAV = startData.navPerShare || 0;
+    const endNAV = endData.navPerShare || 0;
     const totalNAVChange = ((endNAV - startNAV) / startNAV) * 100;
     
-    // Parse metadata for detailed attribution
-    const startMeta = startData.metadata as any;
-    const endMeta = endData.metadata as any;
+    // Calculate contributions using available data
+    const startTreasuryValue = startData.treasuryValue || 0;
+    const endTreasuryValue = endData.treasuryValue || 0;
     
-    // Calculate contributions
-    const treasuryContribution = ((endMeta.components.treasuryValue - startMeta.components.treasuryValue) / 
-                                startMeta.components.treasuryValue) * 100;
+    // Calculate contributions (simplified without metadata)
+    const treasuryContribution = startTreasuryValue > 0 ? 
+      ((endTreasuryValue - startTreasuryValue) / startTreasuryValue) * 100 : 0;
     
-    const equityContribution = ((endMeta.components.adjustedShareholderEquity - 
-                              startMeta.components.adjustedShareholderEquity) / 
-                              startMeta.components.adjustedShareholderEquity) * 100;
+    const equityContribution = 0; // Would need more data to calculate
     
-    const dilutionImpact = -((endMeta.shareCountDetails.assumedDiluted - 
-                           startMeta.shareCountDetails.assumedDiluted) / 
-                           startMeta.shareCountDetails.assumedDiluted) * 100;
+    const dilutionImpact = startData.sharesDiluted > 0 ? 
+      -((endData.sharesDiluted - startData.sharesDiluted) / startData.sharesDiluted) * 100 : 0;
     
     const otherFactors = totalNAVChange - treasuryContribution - equityContribution - dilutionImpact;
     

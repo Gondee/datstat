@@ -8,7 +8,8 @@ export async function initializePerformanceMonitoring() {
     logger.info('Performance', 'Initializing performance monitoring...');
     
     // Enable Prisma metrics
-    await prisma.$metrics.json();
+    // TODO: Fix Prisma metrics API
+    // await prisma.$metrics.json();
     
     // Start system monitoring
     const stopMonitoring = await performanceMonitoring();

@@ -48,7 +48,7 @@ export function useThrottle<T extends (...args: any[]) => any>(
 
 // Intersection Observer hook for lazy loading
 export function useIntersectionObserver(
-  ref: React.RefObject<Element>,
+  ref: React.RefObject<Element | null>,
   options?: IntersectionObserverInit
 ): boolean {
   const [isIntersecting, setIsIntersecting] = React.useState(false);

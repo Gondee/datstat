@@ -293,14 +293,18 @@ export default function ExecutiveCompensationManagement({
                     size="sm"
                     onClick={() => handleEditExecutive(executive)}
                     icon={<Edit3 className="w-4 h-4" />}
-                  />
+                  >
+                    Edit
+                  </TerminalButton>
                   <TerminalButton
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteExecutive(executive)}
                     icon={<Trash2 className="w-4 h-4" />}
                     className="text-[color:var(--terminal-danger)]"
-                  />
+                  >
+                    Delete
+                  </TerminalButton>
                 </div>
               </div>
             ))}

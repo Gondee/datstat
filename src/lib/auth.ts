@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { PrismaClient, Role } from '@prisma/client';
 import { NextRequest } from 'next/server';
@@ -67,17 +67,17 @@ export const generateTokens = (user: AuthUser): AuthTokens => {
     name: user.name,
   };
 
-  const accessToken = jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
+  const accessToken = jwt.sign(payload, JWT_SECRET as string, {
+    expiresIn: '15m',
     issuer: 'datstat-app',
     audience: 'datstat-users',
   });
 
   const refreshToken = jwt.sign(
     { userId: user.id },
-    JWT_REFRESH_SECRET,
+    JWT_REFRESH_SECRET as string,
     {
-      expiresIn: JWT_REFRESH_EXPIRES_IN,
+      expiresIn: '7d',
       issuer: 'datstat-app',
       audience: 'datstat-users',
     }
@@ -88,7 +88,7 @@ export const generateTokens = (user: AuthUser): AuthTokens => {
 
 export const verifyAccessToken = (token: string): JWTPayload | null => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
+    const decoded = jwt.verify(token, JWT_SECRET as string, {
       issuer: 'datstat-app',
       audience: 'datstat-users',
     }) as JWTPayload;
@@ -101,7 +101,7 @@ export const verifyAccessToken = (token: string): JWTPayload | null => {
 
 export const verifyRefreshToken = (token: string): { userId: string } | null => {
   try {
-    const decoded = jwt.verify(token, JWT_REFRESH_SECRET, {
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET as string, {
       issuer: 'datstat-app',
       audience: 'datstat-users',
     }) as { userId: string };

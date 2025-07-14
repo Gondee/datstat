@@ -232,11 +232,12 @@ export default function ChartsPage() {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {chartSections.map(section => (
-              <TerminalCard
+              <div
                 key={section.id}
                 className="cursor-pointer hover:border-[color:var(--terminal-accent)] transition-colors"
                 onClick={() => setActiveView(section.id)}
               >
+                <TerminalCard>
                 <div className="p-4">
                   <div className="flex items-center justify-between mb-3">
                     <section.icon className="w-8 h-8" style={{ color: section.color }} />
@@ -249,7 +250,8 @@ export default function ChartsPage() {
                     {section.description}
                   </p>
                 </div>
-              </TerminalCard>
+                </TerminalCard>
+              </div>
             ))}
           </div>
         </div>

@@ -100,7 +100,7 @@ export function MNavComparisonChart({
         const company = companies.find(c => c.ticker === ticker);
         if (company) {
           // Calculate mNAV with some random variation
-          const baseNav = company.metrics.nav;
+          const baseNav = company.metrics.treasuryValuePerShare || 50;
           const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
           const mNav = baseNav * (1 + variation);
           
@@ -275,19 +275,25 @@ export function MNavComparisonChart({
               onClick={handleRefresh}
               disabled={refreshing}
               icon={<RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />}
-            />
+            >
+              Refresh
+            </TerminalButton>
             <TerminalButton
               size="sm"
               variant="ghost"
               onClick={handleExport}
               icon={<Download className="w-4 h-4" />}
-            />
+            >
+              Export
+            </TerminalButton>
             <TerminalButton
               size="sm"
               variant="ghost"
               onClick={() => setIsFullscreen(!isFullscreen)}
               icon={<Maximize2 className="w-4 h-4" />}
-            />
+            >
+              Fullscreen
+            </TerminalButton>
           </div>
         </div>
 

@@ -60,7 +60,7 @@ export function PerformanceComparisonChart({
     return companies.map((company, index) => ({
       ticker: company.ticker,
       name: company.name,
-      x: company.metrics.cryptoPerformance24h,
+      x: company.metrics.premiumToNavPercent,
       y: company.marketData.change24hPercent,
       z: company.metrics.treasuryValue,
       color: COMPANY_COLORS[index % COMPANY_COLORS.length],
@@ -92,13 +92,13 @@ export function PerformanceComparisonChart({
             value = Math.min(100, Math.max(0, company.marketData.change24hPercent + 50));
             break;
           case 'Crypto Performance':
-            value = Math.min(100, Math.max(0, company.metrics.cryptoPerformance24h + 50));
+            value = Math.min(100, Math.max(0, company.metrics.premiumToNavPercent + 50));
             break;
           case 'Premium to NAV':
             value = Math.min(100, Math.max(0, company.metrics.premiumToNavPercent + 50));
             break;
           case 'Volatility':
-            value = Math.min(100, Math.max(0, 100 - company.marketData.volatility30d));
+            value = Math.min(100, Math.max(0, 100 - Math.abs(company.marketData.change24hPercent)));
             break;
           case 'Liquidity':
             value = Math.min(100, (company.marketData.volume24h / company.marketCap) * 1000);
@@ -141,9 +141,9 @@ export function PerformanceComparisonChart({
   const yieldData = useMemo(() => {
     return companies.map(company => ({
       ticker: company.ticker,
-      stockYield: company.marketData.change30dPercent || 0,
-      cryptoYield: company.metrics.cryptoPerformance30d || 0,
-      totalYield: (company.marketData.change30dPercent || 0) + (company.metrics.cryptoPerformance30d || 0),
+      stockYield: company.marketData.change24hPercent || 0,
+      cryptoYield: company.metrics.premiumToNavPercent || 0,
+      totalYield: (company.marketData.change24hPercent || 0) + (company.metrics.premiumToNavPercent || 0),
     }));
   }, [companies]);
 

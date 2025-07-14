@@ -480,32 +480,40 @@ class DataProcessor extends EventEmitter {
   }
 
   private async updateCryptoInDatabase(data: CryptoPrice, metrics: any): Promise<void> {
-    await prisma.marketData.upsert({
+    // Find existing record
+    const existing = await prisma.marketData.findFirst({
       where: {
-        ticker_timestamp: {
-          ticker: data.symbol,
-          timestamp: new Date(data.timestamp),
-        },
-      },
-      update: {
-        price: data.price,
-        change24h: data.change24h,
-        change24hPercent: data.change24hPercent,
-        volume24h: data.volume24h,
-        marketCap: data.marketCap,
-        updatedAt: new Date(),
-      },
-      create: {
         ticker: data.symbol,
-        symbol: data.symbol as CryptoType,
-        price: data.price,
-        change24h: data.change24h,
-        change24hPercent: data.change24hPercent,
-        volume24h: data.volume24h,
-        marketCap: data.marketCap,
         timestamp: new Date(data.timestamp),
       },
     });
+
+    if (existing) {
+      await prisma.marketData.update({
+        where: { id: existing.id },
+        data: {
+          price: data.price,
+          change24h: data.change24h,
+          change24hPercent: data.change24hPercent,
+          volume24h: data.volume24h,
+          marketCap: data.marketCap,
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.marketData.create({
+        data: {
+          ticker: data.symbol,
+          symbol: data.symbol as CryptoType,
+          price: data.price,
+          change24h: data.change24h,
+          change24hPercent: data.change24hPercent,
+          volume24h: data.volume24h,
+          marketCap: data.marketCap,
+          timestamp: new Date(data.timestamp),
+        },
+      });
+    }
   }
 
   private async updateStockInDatabase(data: MarketData, metrics: any): Promise<void> {
@@ -515,34 +523,42 @@ class DataProcessor extends EventEmitter {
 
     if (!company) return;
 
-    await prisma.marketData.upsert({
+    // Find existing record
+    const existing = await prisma.marketData.findFirst({
       where: {
-        ticker_timestamp: {
-          ticker: data.ticker,
-          timestamp: new Date(data.timestamp),
-        },
-      },
-      update: {
-        price: data.price,
-        change24h: data.change24h,
-        change24hPercent: data.change24hPercent,
-        volume24h: data.volume24h,
-        high24h: data.high24h,
-        low24h: data.low24h,
-        updatedAt: new Date(),
-      },
-      create: {
         ticker: data.ticker,
-        companyId: company.id,
-        price: data.price,
-        change24h: data.change24h,
-        change24hPercent: data.change24hPercent,
-        volume24h: data.volume24h,
-        high24h: data.high24h,
-        low24h: data.low24h,
         timestamp: new Date(data.timestamp),
       },
     });
+
+    if (existing) {
+      await prisma.marketData.update({
+        where: { id: existing.id },
+        data: {
+          price: data.price,
+          change24h: data.change24h,
+          change24hPercent: data.change24hPercent,
+          volume24h: data.volume24h,
+          high24h: data.high24h,
+          low24h: data.low24h,
+          updatedAt: new Date(),
+        },
+      });
+    } else {
+      await prisma.marketData.create({
+        data: {
+          ticker: data.ticker,
+          companyId: company.id,
+          price: data.price,
+          change24h: data.change24h,
+          change24hPercent: data.change24hPercent,
+          volume24h: data.volume24h,
+          high24h: data.high24h,
+          low24h: data.low24h,
+          timestamp: new Date(data.timestamp),
+        },
+      });
+    }
 
     // Update company's last updated timestamp
     await prisma.company.update({

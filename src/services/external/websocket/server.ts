@@ -163,7 +163,7 @@ class WebSocketDataServer extends EventEmitter {
 
     // Also broadcast to alert room
     this.broadcastToRoom('alerts', {
-      type: 'price_alert',
+      type: 'error',
       data: {
         type,
         symbol: symbol || ticker,
@@ -176,7 +176,7 @@ class WebSocketDataServer extends EventEmitter {
 
   private broadcastJobStatus(event: any): void {
     this.broadcastToRoom('admin', {
-      type: 'job_status',
+      type: 'connection_status',
       data: event,
       timestamp: new Date().toISOString(),
     });
@@ -407,7 +407,7 @@ class WebSocketDataServer extends EventEmitter {
       
       case 'ping':
         this.sendToClient(client, {
-          type: 'pong',
+          type: 'connection_status',
           data: { timestamp: Date.now() },
           timestamp: new Date().toISOString(),
         });
@@ -415,7 +415,7 @@ class WebSocketDataServer extends EventEmitter {
       
       case 'get_subscriptions':
         this.sendToClient(client, {
-          type: 'subscriptions',
+          type: 'connection_status',
           data: {
             channels: Array.from(client.subscriptions),
             rooms: Array.from(client.rooms),
@@ -426,7 +426,7 @@ class WebSocketDataServer extends EventEmitter {
       
       case 'get_stats':
         this.sendToClient(client, {
-          type: 'client_stats',
+          type: 'connection_status',
           data: {
             ...client.metadata,
             subscriptions: client.subscriptions.size,
@@ -467,7 +467,7 @@ class WebSocketDataServer extends EventEmitter {
     });
 
     this.sendToClient(client, {
-      type: 'subscription_result',
+      type: 'connection_status',
       data: {
         action: 'subscribe',
         added,
@@ -496,7 +496,7 @@ class WebSocketDataServer extends EventEmitter {
     });
 
     this.sendToClient(client, {
-      type: 'subscription_result',
+      type: 'connection_status',
       data: {
         action: 'unsubscribe',
         removed,
@@ -528,7 +528,7 @@ class WebSocketDataServer extends EventEmitter {
     });
 
     this.sendToClient(client, {
-      type: 'room_result',
+      type: 'connection_status',
       data: {
         action: 'join',
         joined,
@@ -557,7 +557,7 @@ class WebSocketDataServer extends EventEmitter {
     });
 
     this.sendToClient(client, {
-      type: 'room_result',
+      type: 'connection_status',
       data: {
         action: 'leave',
         left,
@@ -684,8 +684,8 @@ class WebSocketDataServer extends EventEmitter {
         this.broadcast(channel, {
           type: 'price_update',
           data: {
-            symbol,
             ...price,
+            symbol,
           },
           timestamp: new Date().toISOString(),
         });
@@ -716,7 +716,7 @@ class WebSocketDataServer extends EventEmitter {
 
       // Broadcast health status
       this.broadcast('health', {
-        type: 'health_update',
+        type: 'connection_status',
         data: await dataIntegrationService.getDataSourceHealth(),
         timestamp: new Date().toISOString(),
       });

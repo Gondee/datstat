@@ -18,33 +18,8 @@ export async function updateApiKey(
   const { name, scopes, active } = body;
 
   try {
-    const apiKey = await prisma.apiKey.findFirst({
-      where: {
-        id: params.id,
-        userId: user.id,
-      },
-    });
-
-    if (!apiKey) {
-      return ApiResponseBuilder.notFound('API key');
-    }
-
-    const updated = await prisma.apiKey.update({
-      where: { id: params.id },
-      data: {
-        name: name || apiKey.name,
-        scopes: scopes || apiKey.scopes,
-        active: active !== undefined ? active : apiKey.active,
-      },
-    });
-
-    return ApiResponseBuilder.success({
-      id: updated.id,
-      name: updated.name,
-      scopes: updated.scopes,
-      active: updated.active,
-      lastUsed: updated.lastUsed?.toISOString(),
-    });
+    // TODO: Implement API key update when ApiKey model is added to schema
+    return ApiResponseBuilder.internalError('API key functionality not yet implemented');
   } catch (error) {
     console.error('Error updating API key:', error);
     return ApiResponseBuilder.internalError('Failed to update API key');
@@ -63,24 +38,8 @@ export async function deleteApiKey(
   }
 
   try {
-    const apiKey = await prisma.apiKey.findFirst({
-      where: {
-        id: params.id,
-        userId: user.id,
-      },
-    });
-
-    if (!apiKey) {
-      return ApiResponseBuilder.notFound('API key');
-    }
-
-    await prisma.apiKey.delete({
-      where: { id: params.id },
-    });
-
-    return ApiResponseBuilder.success({
-      message: 'API key deleted successfully',
-    });
+    // TODO: Implement API key deletion when ApiKey model is added to schema
+    return ApiResponseBuilder.internalError('API key functionality not yet implemented');
   } catch (error) {
     console.error('Error deleting API key:', error);
     return ApiResponseBuilder.internalError('Failed to delete API key');

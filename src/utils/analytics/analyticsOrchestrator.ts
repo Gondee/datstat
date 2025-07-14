@@ -306,10 +306,10 @@ export class AnalyticsOrchestrator {
 
   // Helper methods
   private async fetchCompanyData(ticker: string): Promise<Company | null> {
-    const companyData = await this.prisma.companies.findUnique({
+    const companyData = await this.prisma.company.findUnique({
       where: { ticker },
       include: {
-        treasury_holdings: {
+        treasuryHoldings: {
           include: {
             transactions: true
           }
@@ -324,10 +324,10 @@ export class AnalyticsOrchestrator {
   }
 
   private async fetchCompanies(tickers?: string[]): Promise<Company[]> {
-    const companiesData = await this.prisma.companies.findMany({
+    const companiesData = await this.prisma.company.findMany({
       where: tickers ? { ticker: { in: tickers } } : undefined,
       include: {
-        treasury_holdings: {
+        treasuryHoldings: {
           include: {
             transactions: true
           }
@@ -349,19 +349,19 @@ export class AnalyticsOrchestrator {
 
   private async fetchStockPrice(ticker: string): Promise<number> {
     // In production, fetch from real-time data
-    const company = await this.prisma.companies.findUnique({
+    const company = await this.prisma.company.findUnique({
       where: { ticker },
-      select: { market_cap: true, shares_outstanding: true }
+      select: { marketCap: true, sharesOutstanding: true }
     });
 
     if (!company) return 0;
-    return company.market_cap / company.shares_outstanding;
+    return company.marketCap / company.sharesOutstanding;
   }
 
   private async fetchHistoricalData(ticker: string): Promise<any[]> {
-    const data = await this.prisma.historical_metrics.findMany({
+    const data = await this.prisma.historicalMetric.findMany({
       where: { 
-        ticker,
+        companyId: ticker, // Using companyId instead of ticker
         date: {
           gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) // Last year
         }
@@ -371,19 +371,19 @@ export class AnalyticsOrchestrator {
 
     return data.map(d => ({
       date: d.date.toISOString(),
-      stockPrice: d.stock_price || 0,
-      treasuryValue: d.treasury_value || 0,
-      navPerShare: d.nav_per_share || 0,
-      premiumToNav: d.premium_to_nav || 0,
+      stockPrice: d.stockPrice || 0,
+      treasuryValue: d.treasuryValue || 0,
+      navPerShare: d.navPerShare || 0,
+      premiumToNav: d.premiumToNav || 0,
       volume: d.volume || 0,
-      sharesOutstanding: d.shares_outstanding || 0,
-      sharesDiluted: d.shares_diluted || 0,
-      cryptoYield: d.crypto_yield || 0,
-      impliedVolatility: d.implied_volatility || 0,
+      sharesOutstanding: d.sharesOutstanding || 0,
+      sharesDiluted: d.sharesDiluted || 0,
+      cryptoYield: d.cryptoYield || 0,
+      impliedVolatility: d.impliedVolatility || 0,
       beta: d.beta || 0,
-      institutionalOwnership: d.institutional_ownership || 0,
-      shortInterest: d.short_interest || 0,
-      borrowCost: d.borrow_cost || 0
+      institutionalOwnership: d.institutionalOwnership || 0,
+      shortInterest: d.shortInterest || 0,
+      borrowCost: d.borrowCost || 0
     }));
   }
 
@@ -406,7 +406,7 @@ export class AnalyticsOrchestrator {
       sharesOutstanding: data.shares_outstanding,
       shareholdersEquity: data.shareholders_equity || 0,
       totalDebt: data.total_debt || 0,
-      treasury: data.treasury_holdings.map((h: any) => ({
+      treasury: data.treasuryHoldings.map((h: any) => ({
         crypto: h.crypto_type,
         amount: h.amount,
         averageCostBasis: h.average_cost_basis,

@@ -77,7 +77,7 @@ export function HistoricalAnalysisChart({
       const trendFactor = 1 + (days - i) / days * 0.2; // 20% growth over period
       const randomFactor = 1 + (Math.random() - 0.5) * volatility;
       
-      const navPerShare = company.metrics.nav * trendFactor * randomFactor;
+      const navPerShare = (company.metrics.treasuryValuePerShare || 50) * trendFactor * randomFactor;
       const stockPrice = company.marketData.price * trendFactor * randomFactor * (1 + Math.sin(i / 30) * 0.1);
       const premiumDiscount = ((stockPrice - navPerShare) / navPerShare) * 100;
       

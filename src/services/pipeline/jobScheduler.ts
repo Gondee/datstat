@@ -283,11 +283,7 @@ class JobScheduler extends EventEmitter {
       this.updateJobStats(jobId, execution);
       this.emit('jobFailed', { jobId, execution });
 
-      logger.error('JobScheduler', `Job failed after max retries: ${job.name}`, {
-        jobId,
-        error: execution.error,
-        retryCount: execution.retryCount,
-      });
+      logger.error('JobScheduler', `Job failed after max retries: ${job.name}. JobId: ${jobId}, RetryCount: ${execution.retryCount}`, new Error(execution.error));
     } finally {
       this.runningJobs.delete(jobId);
     }

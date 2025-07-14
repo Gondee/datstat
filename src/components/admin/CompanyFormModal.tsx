@@ -280,7 +280,9 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
             size="sm"
             onClick={onClose}
             icon={<X className="w-4 h-4" />}
-          />
+          >
+            Close
+          </TerminalButton>
         </div>
 
         {/* Tab Navigation */}

@@ -464,14 +464,18 @@ export default function TreasuryManagement({ company, onUpdateTreasury }: Treasu
                             size="sm"
                             onClick={() => handleEditTransaction(holding, tx)}
                             icon={<Edit3 className="w-3 h-3" />}
-                          />
+                          >
+                            Edit
+                          </TerminalButton>
                           <TerminalButton
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteTransaction(holding, tx.id)}
                             icon={<Trash2 className="w-3 h-3" />}
                             className="text-[color:var(--terminal-danger)]"
-                          />
+                          >
+                            Delete
+                          </TerminalButton>
                         </div>
                       </div>
                     </div>
@@ -560,14 +564,18 @@ export default function TreasuryManagement({ company, onUpdateTreasury }: Treasu
                       size="sm"
                       onClick={() => holding && handleEditTransaction(holding, tx)}
                       icon={<Edit3 className="w-4 h-4" />}
-                    />
+                    >
+                      Edit
+                    </TerminalButton>
                     <TerminalButton
                       variant="ghost"
                       size="sm"
                       onClick={() => holding && handleDeleteTransaction(holding, tx.id)}
                       icon={<Trash2 className="w-4 h-4" />}
                       className="text-[color:var(--terminal-danger)]"
-                    />
+                    >
+                      Delete
+                    </TerminalButton>
                   </div>
                 </div>
               </div>

@@ -266,19 +266,19 @@ export function useWebSocketData(url: string) {
       setConnected(false);
     });
 
-    wsClient.on('error', (err) => {
+    wsClient.on('error', (err: Error) => {
       setError(err);
     });
 
-    wsClient.on('price_update', (priceData) => {
-      setData(prev => ({
+    wsClient.on('price_update', (priceData: any) => {
+      setData((prev: any) => ({
         ...prev,
         [`${priceData.symbol}_price`]: priceData,
       }));
     });
 
-    wsClient.on('health_update', (healthData) => {
-      setData(prev => ({
+    wsClient.on('health_update', (healthData: any) => {
+      setData((prev: any) => ({
         ...prev,
         health: healthData,
       }));

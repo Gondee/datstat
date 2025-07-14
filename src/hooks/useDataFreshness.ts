@@ -69,7 +69,7 @@ export function useDataFreshness(
       const ageInSeconds = (Date.now() - prev.lastUpdated.getTime()) / 1000;
       const status = calculateFreshness(prev.lastUpdated);
       const needsRefresh = status === 'expired' || 
-        (cfg.maxAge && ageInSeconds > cfg.maxAge);
+        (!!cfg.maxAge && ageInSeconds > cfg.maxAge);
       
       // Trigger refresh if needed and auto-refresh is enabled
       if (needsRefresh && cfg.autoRefresh && !prev.isRefreshing && onRefreshNeeded) {
