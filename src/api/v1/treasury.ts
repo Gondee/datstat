@@ -58,7 +58,7 @@ export async function getTreasuryHoldings(req: NextRequest): Promise<NextRespons
     ]);
 
     // Get current crypto prices
-    const cryptoPrices = await prisma.cryptoPrice.findMany({
+    const cryptoPrices = await prisma.marketData.findMany({
       where: {
         symbol: { in: ['BTC', 'ETH', 'SOL'] },
       },
@@ -103,12 +103,20 @@ export async function getTreasuryHolding(
   params: { ticker: string; crypto: string }
 ): Promise<NextResponse> {
   try {
-    const holding = await prisma.treasuryHolding.findUnique({
+    // First find the company
+    const company = await prisma.company.findUnique({
+      where: { ticker: params.ticker.toUpperCase() },
+    });
+
+    if (!company) {
+      return ApiResponseBuilder.notFound('Company');
+    }
+
+    // Then find the treasury holding
+    const holding = await prisma.treasuryHolding.findFirst({
       where: {
-        companyTicker_crypto: {
-          companyTicker: params.ticker.toUpperCase(),
-          crypto: params.crypto.toUpperCase() as any,
-        },
+        companyId: company.id,
+        crypto: params.crypto.toUpperCase() as any,
       },
       include: {
         company: true,
@@ -123,7 +131,7 @@ export async function getTreasuryHolding(
     }
 
     // Get current price
-    const cryptoPrice = await prisma.cryptoPrice.findFirst({
+    const cryptoPrice = await prisma.marketData.findFirst({
       where: { symbol: holding.crypto },
       orderBy: { timestamp: 'desc' },
     });
@@ -269,7 +277,7 @@ export async function getTreasurySummary(req: NextRequest): Promise<NextResponse
     });
 
     // Get current crypto prices
-    const cryptoPrices = await prisma.cryptoPrice.findMany({
+    const cryptoPrices = await prisma.marketData.findMany({
       where: {
         symbol: { in: ['BTC', 'ETH', 'SOL'] },
       },

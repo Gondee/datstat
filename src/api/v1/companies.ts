@@ -214,7 +214,7 @@ export async function deleteCompany(
     });
 
     // Audit log
-    await auditLog('company.delete', 'company', params.ticker, null, {
+    await auditLog('company.delete', 'company', params.ticker, {}, {
       id: user.id,
       type: 'user',
     });

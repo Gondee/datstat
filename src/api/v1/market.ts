@@ -87,7 +87,7 @@ export async function getCryptoPrices(req: NextRequest): Promise<NextResponse> {
       where.timestamp = { ...where.timestamp, lte: new Date(query.to) };
     }
 
-    const cryptoPrices = await prisma.cryptoPrice.findMany({
+    const cryptoPrices = await prisma.marketData.findMany({
       where,
       orderBy: { timestamp: 'desc' },
       take: query?.limit || 100,
@@ -96,7 +96,7 @@ export async function getCryptoPrices(req: NextRequest): Promise<NextResponse> {
     // Group by symbol for latest prices
     const latestPrices = new Map<string, any>();
     cryptoPrices.forEach(price => {
-      if (!latestPrices.has(price.symbol)) {
+      if (price.symbol && !latestPrices.has(price.symbol)) {
         latestPrices.set(price.symbol, price);
       }
     });
@@ -154,7 +154,7 @@ export async function getMarketFeed(req: NextRequest): Promise<NextResponse> {
         distinct: ['ticker'],
         take: 20,
       }),
-      prisma.cryptoPrice.findMany({
+      prisma.marketData.findMany({
         orderBy: { timestamp: 'desc' },
         distinct: ['symbol'],
       }),
@@ -180,37 +180,13 @@ export async function getMarketFeed(req: NextRequest): Promise<NextResponse> {
 // GET /api/v1/market/alerts
 export async function getMarketAlerts(req: NextRequest): Promise<NextResponse> {
   try {
-    const alerts = await prisma.alert.findMany({
-      where: { active: true },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-      include: {
-        company: {
-          select: {
-            ticker: true,
-            name: true,
-          },
-        },
-      },
-    });
-
-    const formattedAlerts = alerts.map(alert => ({
-      id: alert.id,
-      type: alert.type,
-      severity: alert.severity,
-      message: alert.message,
-      ticker: alert.company?.ticker,
-      companyName: alert.company?.name,
-      threshold: alert.threshold,
-      currentValue: alert.currentValue,
-      createdAt: alert.createdAt,
-      acknowledged: alert.acknowledged,
-    }));
+    // TODO: Implement alerts when Alert model is added to schema
+    const formattedAlerts: any[] = [];
 
     return ApiResponseBuilder.success({
       alerts: formattedAlerts,
       count: formattedAlerts.length,
-      hasUnacknowledged: formattedAlerts.some(a => !a.acknowledged),
+      hasUnacknowledged: false,
     });
   } catch (error) {
     console.error('Error fetching market alerts:', error);
@@ -268,7 +244,7 @@ async function getCryptoHistoricalData(symbol: string, query: any) {
     where.timestamp = { ...where.timestamp, lte: new Date(query.to) };
   }
 
-  const data = await prisma.cryptoPrice.findMany({
+  const data = await prisma.marketData.findMany({
     where,
     orderBy: { timestamp: 'asc' },
     take: query?.limit || 365,
@@ -409,7 +385,7 @@ async function getMarketSummary() {
 
   // Get total treasury value
   const treasuryHoldings = await prisma.treasuryHolding.findMany();
-  const cryptoPrices = await prisma.cryptoPrice.findMany({
+  const cryptoPrices = await prisma.marketData.findMany({
     orderBy: { timestamp: 'desc' },
     distinct: ['symbol'],
   });
