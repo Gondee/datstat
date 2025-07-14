@@ -17,6 +17,7 @@ import {
 import { TerminalCard, TerminalButton, TerminalInput } from '@/components/ui';
 import { Company } from '@/types';
 import CompanyFormModal from '@/components/admin/CompanyFormModal';
+import { useDATStore } from '@/utils/store';
 
 export default function CompaniesManagement() {
   const [companies, setCompanies] = useState<Company[]>([]);
@@ -27,6 +28,9 @@ export default function CompaniesManagement() {
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Get main store refresh function to update home page data
+  const { fetchCompanies: refreshMainStore } = useDATStore();
 
   // Load companies from API
   const loadCompanies = async () => {
@@ -87,6 +91,9 @@ export default function CompaniesManagement() {
 
         // Reload companies list to get the new company with database ID
         await loadCompanies();
+        
+        // Also refresh the main store so the new company appears on the home page immediately
+        await refreshMainStore();
       } else if (selectedCompany) {
         // Update existing company via API
         const response = await fetch(`/api/admin/companies/${selectedCompany.ticker}`, {
@@ -104,6 +111,9 @@ export default function CompaniesManagement() {
 
         // Reload companies list to get updated data
         await loadCompanies();
+        
+        // Also refresh the main store so the updates appear on the home page immediately
+        await refreshMainStore();
       }
       setShowFormModal(false);
       setSelectedCompany(null);

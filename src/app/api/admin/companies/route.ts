@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { queryCache, CacheKeyGenerator } from '@/lib/performance/cache-utils';
 
 // GET /api/admin/companies - List all companies
 export async function GET() {
@@ -372,6 +373,10 @@ export async function POST(request: NextRequest) {
       
       executiveCompensation: company.executiveCompensation
     };
+
+    // Invalidate relevant caches so the new company appears immediately on the home page
+    const companiesCacheKey = CacheKeyGenerator.generateForQuery('company', 'findMany', { withTreasury: true });
+    queryCache.invalidate(companiesCacheKey);
 
     return NextResponse.json({ company: transformedCompany }, { status: 201 });
   } catch (error: any) {
