@@ -171,11 +171,10 @@ export function LiveDashboard({ companies, initialMarketData }: LiveDashboardPro
         }
       >
         <MNavComparisonChart
-          companies={selectedCompanies}
-          realTimeData={realTimeData}
+          companies={companies.filter(c => selectedCompanies.includes(c.ticker))}
+          timeRange="1D"
+          showPremiumDiscount={true}
           height={400}
-          showControls={true}
-          onCompanySelectionChange={setSelectedCompanies}
         />
       </TerminalCard>
 

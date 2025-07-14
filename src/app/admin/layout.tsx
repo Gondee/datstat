@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Building2, 
   Database, 
@@ -89,14 +90,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {navigation.map((item) => {
               const Icon = item.icon;
               return (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className="flex items-center space-x-3 px-3 py-2 rounded-md text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-accent)] hover:bg-[color:var(--terminal-accent)]/10 transition-colors font-mono text-sm"
                 >
                   <Icon className="w-5 h-5" />
                   <span>{item.name}</span>
-                </a>
+                </Link>
               );
             })}
           </nav>
