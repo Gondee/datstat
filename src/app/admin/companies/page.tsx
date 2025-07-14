@@ -136,13 +136,16 @@ export default function CompaniesManagement() {
       <TerminalCard title="Search & Filter">
         <div className="flex space-x-4">
           <div className="flex-1">
-            <TerminalInput
-              type="text"
-              placeholder="Search companies by name or ticker..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              icon={<Search className="w-4 h-4" />}
-            />
+            <div className="relative">
+              <TerminalInput
+                type="text"
+                placeholder="Search companies by name or ticker..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--terminal-text-secondary)]" />
+            </div>
           </div>
         </div>
       </TerminalCard>
