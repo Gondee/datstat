@@ -65,29 +65,35 @@ export default function LoginPage() {
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <TerminalInput
-                label="Username"
-                type="text"
-                value={credentials.username}
-                onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
-                prefix={<User className="w-4 h-4" />}
-                placeholder="Enter your username"
-                required
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <TerminalInput
+                  label="Username"
+                  type="text"
+                  value={credentials.username}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
+                  placeholder="Enter your username"
+                  required
+                  disabled={isLoading}
+                  className="pl-10"
+                />
+                <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--terminal-text-secondary)] mt-3" />
+              </div>
             </div>
 
             <div>
-              <TerminalInput
-                label="Password"
-                type="password"
-                value={credentials.password}
-                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                prefix={<Lock className="w-4 h-4" />}
-                placeholder="Enter your password"
-                required
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <TerminalInput
+                  label="Password"
+                  type="password"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter your password"
+                  required
+                  disabled={isLoading}
+                  className="pl-10"
+                />
+                <Lock className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[color:var(--terminal-text-secondary)] mt-3" />
+              </div>
             </div>
 
             {error && (
