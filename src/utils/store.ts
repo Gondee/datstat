@@ -133,7 +133,7 @@ export const useDATStore = create<DATState>()(
       applyFiltersAndSort: () => {
         const { companies, filters, sortField, sortDirection } = get();
         
-        let filtered = companies.filter(company => {
+        const filtered = companies.filter(company => {
           // Search query filter
           if (filters.searchQuery) {
             const query = filters.searchQuery.toLowerCase();
@@ -167,7 +167,7 @@ export const useDATStore = create<DATState>()(
         
         // Sort the filtered results
         filtered.sort((a, b) => {
-          let aValue: any, bValue: any;
+          let aValue: unknown, bValue: unknown;
           
           switch (sortField) {
             case 'ticker':

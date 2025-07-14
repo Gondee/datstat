@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, TrendingUp, TrendingDown, Building2, DollarSign, Coins, Activity } from 'lucide-react';
+import { ArrowLeft, TrendingUp, DollarSign, Coins, Activity } from 'lucide-react';
 import { useCompanies } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, Column } from '@/components/ui';
 import { formatCurrency, formatPercentage, getChangeColor } from '@/utils/formatters';
@@ -75,7 +75,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
       key: 'amount',
       label: 'Amount',
       align: 'right',
-      render: (value, row) => (
+      render: (value) => (
         <span className="font-mono">
           {value.toLocaleString()} {company.treasury[0].crypto}
         </span>
@@ -131,7 +131,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
                       <p className="text-green-100 font-mono">{formatCurrency(company.totalDebt, 0)}</p>
                     </div>
                     <div>
-                      <span className="text-green-500/70">Shareholders' Equity:</span>
+                      <span className="text-green-500/70">Shareholders&apos; Equity:</span>
                       <p className="text-green-100 font-mono">{formatCurrency(company.shareholdersEquity, 0)}</p>
                     </div>
                     <div>
@@ -232,7 +232,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {company.treasury.map((holding, index) => (
+              {company.treasury.map((holding) => (
                 <TerminalCard key={holding.crypto} title={`${holding.crypto} Holdings`}>
                   <div className="space-y-4">
                     <div className="text-center">
@@ -435,7 +435,7 @@ export default function CompanyPage({ params }: CompanyPageProps) {
           ].map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key as any)}
+              onClick={() => setActiveTab(tab.key as 'overview' | 'holdings' | 'transactions' | 'performance')}
               className={`px-4 py-2 text-sm font-mono transition-colors ${
                 activeTab === tab.key
                   ? 'text-green-400 border-b-2 border-green-400'

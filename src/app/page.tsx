@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Grid, List, Search, Command, Eye, EyeOff, Building2, TrendingUp } from 'lucide-react';
-import { useDATStore, useCompanies, useViewMode } from '@/utils/store';
+import { useDATStore, useCompanies } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, TerminalInput, Column } from '@/components/ui';
 import { CommandPalette } from '@/components/keyboard/CommandPalette';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -20,7 +20,6 @@ export default function Dashboard() {
   const {
     viewMode,
     setViewMode,
-    updateFilters,
     watchlist,
     addToWatchlist,
     removeFromWatchlist,

@@ -156,7 +156,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, selectedIndex, filteredCommands, onClose]);
+  }, [isOpen, selectedIndex, filteredCommands, onClose, executeCommand]);
 
   // Reset selection when query changes
   useEffect(() => {
@@ -217,7 +217,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                   <div className="border-b border-green-500/20 px-4 py-2 text-xs font-semibold text-green-400">
                     {group}
                   </div>
-                  {groupCommands.map((command, index) => {
+                  {groupCommands.map((command) => {
                     const globalIndex = filteredCommands.indexOf(command);
                     return (
                       <button

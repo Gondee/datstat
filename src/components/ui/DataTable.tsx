@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useVimNavigation } from '@/hooks/useKeyboardShortcuts';
@@ -11,7 +11,7 @@ export interface Column<T> {
   sortable?: boolean;
   align?: 'left' | 'center' | 'right';
   width?: string;
-  render?: (value: any, row: T, index: number) => ReactNode;
+  render?: (value: unknown, row: T, index: number) => ReactNode;
 }
 
 export interface DataTableProps<T> {
@@ -28,12 +28,11 @@ export interface DataTableProps<T> {
   compact?: boolean;
 }
 
-export function DataTable<T extends Record<string, any>>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   className,
   onRowClick,
-  onRowSelect,
   selectedRows = new Set(),
   loading = false,
   keyboardNavigation = true,
@@ -132,7 +131,7 @@ export function DataTable<T extends Record<string, any>>({
               'border-b border-green-500/50 bg-black',
               stickyHeader && 'sticky top-0 z-10'
             )}>
-              {columns.map((column, index) => (
+              {columns.map((column) => (
                 <th
                   key={String(column.key)}
                   className={cn(
