@@ -332,7 +332,7 @@ if __name__ == '__main__':
         # Get analytics
         analytics = api.get_analytics('MSTR')
         nav_per_share = analytics['currentMetrics']['nav']['navPerShare']
-        print(f"NAV per share: ${nav_per_share:.2f}")
+        print(f"NAV per share: ${{nav_per_share:.2f}}")
         
     except requests.exceptions.RequestException as e:
         print(f"API Error: {e}")
