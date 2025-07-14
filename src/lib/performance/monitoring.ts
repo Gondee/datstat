@@ -66,11 +66,17 @@ class SystemMonitor {
         free: freeMemory,
         percentUsed: (usedMemory / totalMemory) * 100
       },
-      process: typeof process !== 'undefined' ? {
-        uptime: process.uptime ? process.uptime() : 0,
-        pid: process.pid || 0,
-        memoryUsage: process.memoryUsage ? process.memoryUsage() : {}
-      } : {}
+      process: {
+        uptime: typeof process !== 'undefined' && process.uptime ? process.uptime() : 0,
+        pid: typeof process !== 'undefined' && process.pid ? process.pid : 0,
+        memoryUsage: typeof process !== 'undefined' && process.memoryUsage ? process.memoryUsage() : {
+          rss: 0,
+          heapTotal: 0,
+          heapUsed: 0,
+          external: 0,
+          arrayBuffers: 0
+        }
+      }
     };
     
     this.metricsHistory.push(metrics);
