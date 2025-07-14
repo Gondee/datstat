@@ -400,9 +400,19 @@ async function getHistoricalAnalytics(ticker: string) {
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const historicalData = await prisma.historicalData.findMany({
+  // First find the company to get its ID
+  const company = await prisma.company.findUnique({
+    where: { ticker },
+    select: { id: true },
+  });
+
+  if (!company) {
+    return [];
+  }
+
+  const historicalData = await prisma.historicalMetric.findMany({
     where: {
-      ticker,
+      companyId: company.id,
       date: { gte: thirtyDaysAgo },
     },
     orderBy: { date: 'asc' },
@@ -425,7 +435,7 @@ async function getPeerComparison(ticker: string, sector: string) {
       ticker: { not: ticker },
     },
     include: {
-      treasury: true,
+      treasuryHoldings: true,
       marketData: {
         orderBy: { timestamp: 'desc' },
         take: 1,
