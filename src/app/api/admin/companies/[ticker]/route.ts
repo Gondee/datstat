@@ -24,8 +24,6 @@ export async function GET(
             warrants: true
           }
         },
-        businessModel: true,
-        governance: true
       }
     });
 
@@ -90,26 +88,19 @@ export async function PUT(
         sharesOutstanding,
         shareholdersEquity,
         totalDebt,
-        businessModel: businessModel ? {
-          upsert: {
-            create: {
-              revenueStreams: businessModel.revenueStreams,
-              operatingRevenue: businessModel.operatingRevenue,
-              operatingExpenses: businessModel.operatingExpenses,
-              cashBurnRate: businessModel.cashBurnRate,
-              isTreasuryFocused: businessModel.isTreasuryFocused,
-              legacyBusinessValue: businessModel.legacyBusinessValue
-            },
-            update: {
-              revenueStreams: businessModel.revenueStreams,
-              operatingRevenue: businessModel.operatingRevenue,
-              operatingExpenses: businessModel.operatingExpenses,
-              cashBurnRate: businessModel.cashBurnRate,
-              isTreasuryFocused: businessModel.isTreasuryFocused,
-              legacyBusinessValue: businessModel.legacyBusinessValue
-            }
-          }
-        } : undefined,
+        // Business model fields are directly on Company model
+        revenueStreams: businessModel?.revenueStreams,
+        operatingRevenue: businessModel?.operatingRevenue,
+        operatingExpenses: businessModel?.operatingExpenses,
+        cashBurnRate: businessModel?.cashBurnRate,
+        isTreasuryFocused: businessModel?.isTreasuryFocused,
+        legacyBusinessValue: businessModel?.legacyBusinessValue,
+        // Governance fields are directly on Company model
+        boardSize: governance?.boardSize,
+        independentDirectors: governance?.independentDirectors,
+        ceoFounder: governance?.ceoFounder,
+        votingRights: governance?.votingRights,
+        auditFirm: governance?.auditFirm,
         capitalStructure: capitalStructure ? {
           upsert: {
             create: {
@@ -137,24 +128,6 @@ export async function PUT(
               performanceStockUnits: capitalStructure.performanceStockUnits
             }
           }
-        } : undefined,
-        governance: governance ? {
-          upsert: {
-            create: {
-              boardSize: governance.boardSize,
-              independentDirectors: governance.independentDirectors,
-              ceoFounder: governance.ceoFounder,
-              votingRights: governance.votingRights,
-              auditFirm: governance.auditFirm
-            },
-            update: {
-              boardSize: governance.boardSize,
-              independentDirectors: governance.independentDirectors,
-              ceoFounder: governance.ceoFounder,
-              votingRights: governance.votingRights,
-              auditFirm: governance.auditFirm
-            }
-          }
         } : undefined
       },
       include: {
@@ -170,8 +143,6 @@ export async function PUT(
             warrants: true
           }
         },
-        businessModel: true,
-        governance: true
       }
     });
 

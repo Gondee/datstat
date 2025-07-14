@@ -9,8 +9,8 @@ interface RouteParams {
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
+  const { ticker } = await params;
   try {
-    const { ticker } = await params;
     const { searchParams } = new URL(request.url);
     const parsed = searchParams.get('parsed');
     const accessionNumber = searchParams.get('accessionNumber');
@@ -47,8 +47,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
+  const { ticker } = await params;
   try {
-    const { ticker } = await params;
     const body = await request.json();
     const { filingTypes, limit } = body;
 

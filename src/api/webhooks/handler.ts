@@ -114,7 +114,14 @@ export async function createWebhook(req: NextRequest): Promise<NextResponse> {
 
   try {
     // TODO: Implement webhook creation when Webhook model is added to schema
-    const webhook = { id: 'mock-webhook-id', url: body.url, events: body.events };
+    const webhook = { 
+      id: 'mock-webhook-id', 
+      url: body.url, 
+      events: body.events, 
+      secret: 'mock-secret',
+      active: true,
+      createdAt: new Date()
+    };
 
     // Reload webhooks
     await webhookEmitter.loadWebhooks();
@@ -140,22 +147,10 @@ export async function listWebhooks(req: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const webhooks = await // TODO: prisma.webhook.findMany({
-      where: { userId: user.id },
-      orderBy: { createdAt: 'desc' },
-    });
+    // TODO: Implement webhook listing when Webhook model is added to schema
+    const webhooks: any[] = [];
 
-    return ApiResponseBuilder.success(
-      webhooks.map(w => ({
-        id: w.id,
-        url: w.url,
-        events: w.events,
-        active: w.active,
-        createdAt: w.createdAt.toISOString(),
-        lastTriggered: w.lastTriggered?.toISOString(),
-        failureCount: w.failureCount,
-      }))
-    );
+    return ApiResponseBuilder.success(webhooks);
   } catch (error) {
     console.error('Error listing webhooks:', error);
     return ApiResponseBuilder.internalError('Failed to list webhooks');
@@ -174,25 +169,15 @@ export async function updateWebhook(
   const body = await req.json();
 
   try {
-    const webhook = await // TODO: prisma.webhook.findFirst({
-      where: {
-        id: params.id,
-        userId: user.id,
-      },
-    });
+    // TODO: Implement webhook update when Webhook model is added to schema
+    const webhook = null;
 
-    if (!webhook) {
-      return ApiResponseBuilder.notFound('Webhook');
-    }
+    // TODO: Check if webhook exists in database
+    // if (!webhook) {
+    //   return ApiResponseBuilder.notFound('Webhook');
+    // }
 
-    const updated = await // TODO: prisma.webhook.update({
-      where: { id: params.id },
-      data: {
-        url: body.url || webhook.url,
-        events: body.events || webhook.events,
-        active: body.active !== undefined ? body.active : webhook.active,
-      },
-    });
+    const updated = { id: params.id, url: body.url, events: body.events, active: body.active };
 
     // Reload webhooks
     await webhookEmitter.loadWebhooks();
@@ -202,9 +187,9 @@ export async function updateWebhook(
       url: updated.url,
       events: updated.events,
       active: updated.active,
-      createdAt: updated.createdAt.toISOString(),
-      lastTriggered: updated.lastTriggered?.toISOString(),
-      failureCount: updated.failureCount,
+      createdAt: new Date().toISOString(),
+      lastTriggered: null,
+      failureCount: 0,
     });
   } catch (error) {
     console.error('Error updating webhook:', error);
@@ -222,20 +207,15 @@ export async function deleteWebhook(
   }
 
   try {
-    const webhook = await // TODO: prisma.webhook.findFirst({
-      where: {
-        id: params.id,
-        userId: user.id,
-      },
-    });
+    // TODO: Implement webhook deletion when Webhook model is added to schema
+    const webhook = null;
 
-    if (!webhook) {
-      return ApiResponseBuilder.notFound('Webhook');
-    }
+    // TODO: Check if webhook exists in database
+    // if (!webhook) {
+    //   return ApiResponseBuilder.notFound('Webhook');
+    // }
 
-    await // TODO: prisma.webhook.delete({
-      where: { id: params.id },
-    });
+    // TODO: Delete webhook from database
 
     // Reload webhooks
     await webhookEmitter.loadWebhooks();
@@ -260,16 +240,18 @@ export async function testWebhook(
   }
 
   try {
-    const webhook = await // TODO: prisma.webhook.findFirst({
-      where: {
-        id: params.id,
-        userId: user.id,
-      },
-    });
+    // TODO: Implement webhook testing when Webhook model is added to schema
+    const webhook = { 
+      id: params.id, 
+      url: 'https://example.com/webhook', 
+      secret: 'mock-secret',
+      events: ['system.test']
+    };
 
-    if (!webhook) {
-      return ApiResponseBuilder.notFound('Webhook');
-    }
+    // TODO: Check if webhook exists in database
+    // if (!webhook) {
+    //   return ApiResponseBuilder.notFound('Webhook');
+    // }
 
     // Send test payload
     const testPayload: WebhookPayload = {

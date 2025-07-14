@@ -53,32 +53,44 @@ export async function POST(request: NextRequest) {
 
         // Update database with new crypto prices
         for (const [symbol, price] of Object.entries(cryptoResults.data)) {
-          await prisma.marketData.upsert({
+          // Check if a record already exists for this symbol and timestamp
+          const existingRecord = await prisma.marketData.findFirst({
             where: {
-              ticker_timestamp: {
-                ticker: symbol,
-                timestamp: new Date(price.timestamp),
+              ticker: symbol,
+              timestamp: {
+                gte: new Date(Date.now() - 5 * 60 * 1000), // Within last 5 minutes
               },
             },
-            update: {
-              price: price.price,
-              change24h: price.change24h,
-              change24hPercent: price.change24hPercent,
-              volume24h: price.volume24h,
-              marketCap: price.marketCap,
-              updatedAt: new Date(),
-            },
-            create: {
-              ticker: symbol,
-              symbol: symbol as CryptoType,
-              price: price.price,
-              change24h: price.change24h,
-              change24hPercent: price.change24hPercent,
-              volume24h: price.volume24h,
-              marketCap: price.marketCap,
-              timestamp: new Date(price.timestamp),
-            },
           });
+
+          if (existingRecord) {
+            // Update existing record
+            await prisma.marketData.update({
+              where: { id: existingRecord.id },
+              data: {
+                price: price.price,
+                change24h: price.change24h,
+                change24hPercent: price.change24hPercent,
+                volume24h: price.volume24h,
+                marketCap: price.marketCap,
+                updatedAt: new Date(),
+              },
+            });
+          } else {
+            // Create new record
+            await prisma.marketData.create({
+              data: {
+                ticker: symbol,
+                symbol: symbol as CryptoType,
+                price: price.price,
+                change24h: price.change24h,
+                change24hPercent: price.change24hPercent,
+                volume24h: price.volume24h,
+                marketCap: price.marketCap,
+                timestamp: new Date(price.timestamp),
+              },
+            });
+          }
         }
       } catch (error) {
         results.errors.push(`Crypto refresh failed: ${(error as Error).message}`);
@@ -105,36 +117,50 @@ export async function POST(request: NextRequest) {
           });
 
           if (company) {
-            await prisma.marketData.upsert({
+            // Check if a record already exists for this ticker and timestamp
+            const existingRecord = await prisma.marketData.findFirst({
               where: {
-                ticker_timestamp: {
-                  ticker: symbol,
-                  timestamp: new Date(marketData.timestamp),
-                },
-              },
-              update: {
-                price: marketData.price,
-                change24h: marketData.change24h,
-                change24hPercent: marketData.change24hPercent,
-                volume24h: marketData.volume24h,
-                high24h: marketData.high24h,
-                low24h: marketData.low24h,
-                updatedAt: new Date(),
-              },
-              create: {
                 ticker: symbol,
-                companyId: company.id,
-                price: marketData.price,
-                change24h: marketData.change24h,
-                change24hPercent: marketData.change24hPercent,
-                volume24h: marketData.volume24h,
-                high24h: marketData.high24h,
-                low24h: marketData.low24h,
-                timestamp: new Date(marketData.timestamp),
+                timestamp: {
+                  gte: new Date(Date.now() - 5 * 60 * 1000), // Within last 5 minutes
+                },
               },
             });
 
-            // Update company's last updated timestamp
+            if (existingRecord) {
+              // Update existing record
+              await prisma.marketData.update({
+                where: { id: existingRecord.id },
+                data: {
+                  price: marketData.price,
+                  change24h: marketData.change24h,
+                  change24hPercent: marketData.change24hPercent,
+                  volume24h: marketData.volume24h,
+                  high24h: marketData.high24h,
+                  low24h: marketData.low24h,
+                  updatedAt: new Date(),
+                },
+              });
+            } else {
+              // Create new record
+              await prisma.marketData.create({
+                data: {
+                  ticker: symbol,
+                  companyId: company.id,
+                  price: marketData.price,
+                  change24h: marketData.change24h,
+                  change24hPercent: marketData.change24hPercent,
+                  volume24h: marketData.volume24h,
+                  high24h: marketData.high24h,
+                  low24h: marketData.low24h,
+                  timestamp: new Date(marketData.timestamp),
+                },
+              });
+            }
+          }
+
+          // Update company's last updated timestamp if company exists
+          if (company) {
             await prisma.company.update({
               where: { id: company.id },
               data: { lastUpdated: new Date() },

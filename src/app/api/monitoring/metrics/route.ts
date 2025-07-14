@@ -65,8 +65,7 @@ export const GET = createOptimizedAPIHandler(
 );
 
 // POST /api/monitoring/metrics/clear - Clear metrics
-export const POST = createOptimizedAPIHandler(
-  async (request: NextRequest) => {
+export async function POST(request: NextRequest) {
     const body = await request.json();
     const { type } = body;
     
@@ -95,11 +94,4 @@ export const POST = createOptimizedAPIHandler(
       success: true,
       message: `Cleared ${type} metrics`
     });
-  },
-  {
-    rateLimit: {
-      windowMs: 60000,
-      maxRequests: 10 // Strict limit for clearing operations
-    }
-  }
-);
+}

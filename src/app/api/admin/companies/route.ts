@@ -83,16 +83,19 @@ export async function POST(request: NextRequest) {
         sharesOutstanding,
         shareholdersEquity,
         totalDebt,
-        businessModel: {
-          create: {
-            revenueStreams: businessModel.revenueStreams,
-            operatingRevenue: businessModel.operatingRevenue,
-            operatingExpenses: businessModel.operatingExpenses,
-            cashBurnRate: businessModel.cashBurnRate,
-            isTreasuryFocused: businessModel.isTreasuryFocused,
-            legacyBusinessValue: businessModel.legacyBusinessValue
-          }
-        },
+        // Business model fields are directly on Company model
+        revenueStreams: businessModel?.revenueStreams || [],
+        operatingRevenue: businessModel?.operatingRevenue || 0,
+        operatingExpenses: businessModel?.operatingExpenses || 0,
+        cashBurnRate: businessModel?.cashBurnRate || 0,
+        isTreasuryFocused: businessModel?.isTreasuryFocused || false,
+        legacyBusinessValue: businessModel?.legacyBusinessValue || 0,
+        // Governance fields are directly on Company model  
+        boardSize: governance?.boardSize || 0,
+        independentDirectors: governance?.independentDirectors || 0,
+        ceoFounder: governance?.ceoFounder || false,
+        votingRights: governance?.votingRights,
+        auditFirm: governance?.auditFirm,
         capitalStructure: {
           create: {
             sharesBasic: capitalStructure.sharesBasic,
@@ -129,15 +132,6 @@ export async function POST(request: NextRequest) {
                 notes: warrant.notes
               })) || []
             }
-          }
-        },
-        governance: {
-          create: {
-            boardSize: governance.boardSize,
-            independentDirectors: governance.independentDirectors,
-            ceoFounder: governance.ceoFounder,
-            votingRights: governance.votingRights,
-            auditFirm: governance.auditFirm
           }
         }
       },

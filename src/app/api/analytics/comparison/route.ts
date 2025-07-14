@@ -76,23 +76,26 @@ export async function POST(request: NextRequest) {
     switch (analysisType) {
       case 'efficiency':
         result = {
-          efficiencyFrontier: comparativeData.efficiencyFrontier,
-          optimalWeights: comparativeData.efficiencyFrontier.optimalPortfolio
+          ...comparativeData,
+          efficiencyFrontier: comparativeData.efficiencyFrontier
         };
         break;
         
       case 'value':
         result = {
-          relativeValue: comparativeData.comparative.relativeValue,
-          cheapest: comparativeData.comparative.relativeValue.cheapest,
-          expensive: comparativeData.comparative.relativeValue.mostExpensive
+          ...comparativeData,
+          comparative: {
+            relativeValue: comparativeData.comparative.relativeValue
+          }
         };
         break;
         
       case 'correlation':
         result = {
-          correlations: comparativeData.comparative.correlations,
-          clusters: comparativeData.comparative.correlations.clusterAnalysis
+          ...comparativeData,
+          comparative: {
+            correlations: comparativeData.comparative.correlations
+          }
         };
         break;
     }

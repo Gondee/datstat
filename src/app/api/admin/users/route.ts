@@ -5,14 +5,13 @@ import bcrypt from 'bcryptjs';
 // GET /api/admin/users - List all users
 export async function GET() {
   try {
-    const users = await prisma.user.findMany({
+    const users = await prisma.adminUser.findMany({
       select: {
         id: true,
         email: true,
         name: true,
         role: true,
         isActive: true,
-        lastLogin: true,
         createdAt: true,
         updatedAt: true
       },
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.adminUser.findUnique({
       where: { email }
     });
 
@@ -70,7 +69,7 @@ export async function POST(request: NextRequest) {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const user = await prisma.user.create({
+    const user = await prisma.adminUser.create({
       data: {
         email: email.toLowerCase(),
         name,
@@ -84,7 +83,6 @@ export async function POST(request: NextRequest) {
         name: true,
         role: true,
         isActive: true,
-        lastLogin: true,
         createdAt: true,
         updatedAt: true
       }

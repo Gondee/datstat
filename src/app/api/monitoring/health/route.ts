@@ -3,8 +3,7 @@ import { systemMonitor, getMetricsDashboard } from '@/lib/performance/monitoring
 import { createOptimizedAPIHandler } from '@/lib/performance/api-optimization';
 
 // GET /api/monitoring/health - Get system health status
-export const GET = createOptimizedAPIHandler(
-  async (request: NextRequest) => {
+export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const detailed = searchParams.get('detailed') === 'true';
     
@@ -35,12 +34,4 @@ export const GET = createOptimizedAPIHandler(
         }
       });
     }
-  },
-  {
-    cache: {
-      enabled: true,
-      ttl: 5000 // Cache for 5 seconds
-    },
-    compression: true
-  }
-);
+}

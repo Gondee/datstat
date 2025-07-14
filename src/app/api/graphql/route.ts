@@ -21,7 +21,7 @@ const server = new ApolloServer<GraphQLContext>({
             const { response } = requestContext;
             response.http.headers.set(
               'X-Response-Time',
-              `${Date.now() - requestContext.contextValue.startTime}ms`
+              `${Date.now() - (requestContext.contextValue as any).startTime}ms`
             );
           },
         };

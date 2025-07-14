@@ -75,7 +75,7 @@ export const GET = createOptimizedAPIHandler(
           sharpeRatio: analytics.risk.marketRisk.sharpeRatio
         },
         concentrationRisk: analytics.risk.concentrationRisk.treasuryConcentration,
-        stressTest: analytics.risk.stressTest.scenarios.map(s => ({
+        stressTest: analytics.risk.stressTest.scenarios.map((s: any) => ({
           scenario: s.name,
           probability: s.probability,
           impact: s.overallImpact
@@ -91,8 +91,8 @@ export const GET = createOptimizedAPIHandler(
         outlook: analytics.financialHealth.outlook,
         components: Object.entries(analytics.financialHealth.components).reduce((acc, [key, value]) => {
           acc[key] = {
-            score: value.score,
-            rating: value[`${key}Rating`]
+            score: (value as any).score,
+            rating: (value as any)[`${key}Rating`]
           };
           return acc;
         }, {} as any),
@@ -201,7 +201,7 @@ export async function POST(
         
         // Extract relative metrics for the target company
         const targetRankings = Object.entries(comparativeData.rankings).reduce((acc, [metric, rankings]) => {
-          const targetRank = rankings.find(r => r.ticker === ticker.toUpperCase());
+          const targetRank = (rankings as any).find((r: any) => r.ticker === ticker.toUpperCase());
           if (targetRank) {
             acc[metric] = {
               rank: targetRank.rank,
