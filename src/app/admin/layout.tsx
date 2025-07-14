@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <div className={`
         fixed inset-y-0 left-0 z-50 w-64 bg-[color:var(--terminal-surface)] border-r border-[color:var(--terminal-border)] transform
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:inset-0 transition-transform duration-300 ease-in-out
+        lg:translate-x-0 transition-transform duration-300 ease-in-out
       `}>
         <div className="flex h-full flex-col">
           {/* Header */}
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64 min-h-screen">
+      <div className="lg:pl-64">
         {/* Top bar */}
         <div className="bg-[color:var(--terminal-surface)] border-b border-[color:var(--terminal-border)] px-6 py-4">
           <div className="flex items-center justify-between">
@@ -148,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Page content */}
-        <main className="p-6">
+        <main className="p-6 min-h-screen">
           {children}
         </main>
       </div>
