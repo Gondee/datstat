@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { dataIntegrationService } from '@/services/external/dataIntegration';
-import { coinGeckoService } from '@/services/external/apis/coinGeckoService';
+import { coinMarketCapService } from '@/services/external/apis/coinMarketCapService';
 import { alphaVantageService } from '@/services/external/apis/alphaVantageService';
 import { secEdgarService } from '@/services/external/apis/secEdgarService';
 import { logger } from '@/services/external/utils/logger';
@@ -20,8 +20,8 @@ export async function GET(request: NextRequest) {
       let serviceHealth;
       
       switch (service.toLowerCase()) {
-        case 'coingecko':
-          serviceHealth = coinGeckoService.getHealthStatus();
+        case 'coinmarketcap':
+          serviceHealth = coinMarketCapService.getHealthStatus();
           break;
         case 'alphavantage':
           serviceHealth = alphaVantageService.getHealthStatus();
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       dataSourceHealth,
       databaseHealth,
     ] = await Promise.allSettled([
-      Promise.resolve(coinGeckoService.getHealthStatus()),
+      Promise.resolve(coinMarketCapService.getHealthStatus()),
       Promise.resolve(alphaVantageService.getHealthStatus()),
       Promise.resolve(secEdgarService.getHealthStatus()),
       dataIntegrationService.getDataSourceHealth(),
@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       services: {
-        coinGecko: getSettledValue(cryptoHealth),
+        coinMarketCap: getSettledValue(cryptoHealth),
         alphaVantage: getSettledValue(stockHealth),
         secEdgar: getSettledValue(filingHealth),
       },
@@ -187,8 +187,8 @@ export async function POST(request: NextRequest) {
 
         let testResult;
         switch (service.toLowerCase()) {
-          case 'coingecko':
-            testResult = await coinGeckoService.getCryptoPrice('BTC');
+          case 'coinmarketcap':
+            testResult = await coinMarketCapService.getCryptoPrice('BTC');
             break;
           case 'alphavantage':
             testResult = await alphaVantageService.getStockQuote('MSTR');

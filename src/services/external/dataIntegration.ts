@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import { coinGeckoService } from './apis/coinGeckoService';
+import { coinMarketCapService } from './apis/coinMarketCapService';
 import { alphaVantageService } from './apis/alphaVantageService';
 import { secEdgarService } from './apis/secEdgarService';
 import { logger } from './utils/logger';
@@ -145,7 +145,7 @@ class DataIntegrationService {
     try {
       logger.debug('DataIntegration', 'Refreshing crypto prices');
       
-      const result = await coinGeckoService.getAllCryptoPrices();
+      const result = await coinMarketCapService.getAllCryptoPrices();
       
       // Update database
       for (const [symbol, price] of Object.entries(result.data)) {
@@ -391,7 +391,7 @@ class DataIntegrationService {
       
       for (const symbol of cryptoSymbols) {
         try {
-          const result = await coinGeckoService.getCryptoPrice(symbol);
+          const result = await coinMarketCapService.getCryptoPrice(symbol);
           cryptoPrices[symbol] = result.data;
         } catch (error) {
           logger.warn('DataIntegration', `Failed to get price for ${symbol}`, {

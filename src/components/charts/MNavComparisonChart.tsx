@@ -68,10 +68,12 @@ function MNavComparisonChartComponent({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
 
   // Set initial timestamp on client side only
   useEffect(() => {
     setLastUpdate(new Date());
+    setIsClient(true);
   }, []);
 
   // WebSocket connection for real-time updates (disabled for now)

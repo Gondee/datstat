@@ -1,7 +1,7 @@
 // External API Integration Services
 // Main entry point for all external data services
 
-export { coinGeckoService } from './apis/coinGeckoService';
+export { coinMarketCapService } from './apis/coinMarketCapService';
 export { alphaVantageService } from './apis/alphaVantageService';
 export { secEdgarService } from './apis/secEdgarService';
 
@@ -21,7 +21,7 @@ export { WebSocketDataClient, useWebSocketData } from './websocket/client';
 export * from './types';
 
 // Import services for internal use
-import { coinGeckoService } from './apis/coinGeckoService';
+import { coinMarketCapService } from './apis/coinMarketCapService';
 import { alphaVantageService } from './apis/alphaVantageService';
 import { secEdgarService } from './apis/secEdgarService';
 import { dataIntegrationService } from './dataIntegration';
@@ -32,7 +32,7 @@ import { cache } from './utils/cache';
 // Service health check utility
 export async function getAllServiceHealth() {
   const [cryptoHealth, stockHealth, filingHealth, integrationHealth] = await Promise.allSettled([
-    Promise.resolve(coinGeckoService.getHealthStatus()),
+    Promise.resolve(coinMarketCapService.getHealthStatus()),
     Promise.resolve(alphaVantageService.getHealthStatus()),
     Promise.resolve(secEdgarService.getHealthStatus()),
     dataIntegrationService.getDataSourceHealth(),

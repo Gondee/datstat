@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { coinGeckoService } from '@/services/external/apis/coinGeckoService';
+import { coinMarketCapService } from '@/services/external/apis/coinMarketCapService';
 import { alphaVantageService } from '@/services/external/apis/alphaVantageService';
 import { secEdgarService } from '@/services/external/apis/secEdgarService';
 import { logger } from '@/services/external/utils/logger';
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (dataTypes.includes('crypto')) {
       logger.info('API', 'Refreshing crypto prices');
       try {
-        const cryptoResults = await coinGeckoService.getAllCryptoPrices();
+        const cryptoResults = await coinMarketCapService.getAllCryptoPrices();
         results.refreshed.crypto = {
           success: true,
           count: Object.keys(cryptoResults.data).length,
@@ -271,7 +271,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     // Get health status of all data sources
-    const cryptoHealth = coinGeckoService.getHealthStatus();
+    const cryptoHealth = coinMarketCapService.getHealthStatus();
     const stockHealth = alphaVantageService.getHealthStatus();
     const filingHealth = secEdgarService.getHealthStatus();
 
