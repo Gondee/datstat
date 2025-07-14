@@ -32,14 +32,14 @@ export async function authenticateJWT(
     const token = authHeader.substring(7);
     const decoded = jwt.verify(token, JWT_SECRET) as any;
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.adminUser.findUnique({
       where: { id: decoded.userId },
       select: {
         id: true,
         email: true,
-        username: true,
+        name: true,
         role: true,
-        permissions: true,
+        isActive: true,
       },
     });
 
@@ -90,57 +90,19 @@ export async function authenticateApiKey(
       };
     }
 
-    const apiKey = await prisma.apiKey.findUnique({
-      where: { key: apiKeyHeader },
-      include: { user: true },
-    });
-
-    if (!apiKey || !apiKey.active) {
-      return {
-        error: {
-          success: false,
-          error: {
-            code: 'INVALID_API_KEY',
-            message: 'Invalid or inactive API key',
-            timestamp: new Date().toISOString(),
-          },
-        },
-      };
-    }
-
-    // Check expiration
-    if (apiKey.expiresAt && new Date(apiKey.expiresAt) < new Date()) {
-      return {
-        error: {
-          success: false,
-          error: {
-            code: 'API_KEY_EXPIRED',
-            message: 'API key has expired',
-            timestamp: new Date().toISOString(),
-          },
-        },
-      };
-    }
-
-    // Update last used
-    await prisma.apiKey.update({
-      where: { id: apiKey.id },
-      data: { lastUsed: new Date() },
-    });
-
+    // TODO: Implement API key authentication when schema includes ApiKey model
+    // For now, return error for API key auth
     return {
-      apiKey: {
-        id: apiKey.id,
-        key: apiKey.key,
-        name: apiKey.name,
-        scopes: apiKey.scopes,
-        rateLimit: apiKey.rateLimit,
-        createdAt: apiKey.createdAt.toISOString(),
-        lastUsed: apiKey.lastUsed?.toISOString(),
-        expiresAt: apiKey.expiresAt?.toISOString(),
-        active: apiKey.active,
+      error: {
+        success: false,
+        error: {
+          code: 'API_KEY_NOT_IMPLEMENTED',
+          message: 'API key authentication not implemented',
+          timestamp: new Date().toISOString(),
+        },
       },
     };
+
   } catch (error) {
     return {
       error: {

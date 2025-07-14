@@ -30,7 +30,7 @@ export async function getCompanies(req: NextRequest): Promise<NextResponse> {
     }
 
     if (query?.hasTreasury !== undefined) {
-      where.treasury = query.hasTreasury ? { some: {} } : { none: {} };
+      where.treasuryHoldings = query.hasTreasury ? { some: {} } : { none: {} };
     }
 
     if (query?.search) {
@@ -246,7 +246,7 @@ async function calculateCompanyMetrics(company: any) {
   let treasuryValue = 0;
   const treasuryConcentration: Record<string, number> = {};
 
-  company.treasury?.forEach((holding: any) => {
+  company.treasuryHoldings?.forEach((holding: any) => {
     const currentPrice = priceMap.get(holding.crypto) || 0;
     const value = holding.amount * currentPrice;
     treasuryValue += value;

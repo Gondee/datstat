@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { updateApiKey, deleteApiKey } from '../route';
+import { updateApiKey, deleteApiKey } from '../handlers';
 
 interface RouteParams {
   params: Promise<{
