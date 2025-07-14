@@ -3,14 +3,12 @@
 import { useState, useEffect } from 'react';
 import { 
   Database, 
-  Refresh, 
+  RefreshCw, 
   Upload, 
   Download, 
   AlertCircle, 
   CheckCircle, 
   Clock,
-  TrendingUp,
-  DollarSign,
   Activity,
   FileText,
   Edit3,
@@ -41,8 +39,8 @@ interface ManualDataEntry {
 }
 
 export default function DataManagement() {
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [cryptoPrices, setCryptoPrices] = useState<Record<string, CryptoPrice>>({});
+  const [, setCompanies] = useState<Company[]>([]);
+  const [, setCryptoPrices] = useState<Record<string, CryptoPrice>>({});
   const [dataSources, setDataSources] = useState<DataSource[]>([]);
   const [manualEntries, setManualEntries] = useState<ManualDataEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -308,7 +306,7 @@ export default function DataManagement() {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleRefreshData(source.id)}
-                  icon={<Refresh className="w-4 h-4" />}
+                  icon={<RefreshCw className="w-4 h-4" />}
                   className="text-[color:var(--terminal-primary)] hover:bg-[color:var(--terminal-primary)]/10"
                 >
                   Refresh

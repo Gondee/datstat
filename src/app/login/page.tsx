@@ -29,14 +29,14 @@ export default function LoginPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        await response.json();
         // Redirect to admin dashboard
         router.push('/admin');
       } else {
         const error = await response.json();
         setError(error.message || 'Invalid credentials');
       }
-    } catch (error) {
+    } catch {
       setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
