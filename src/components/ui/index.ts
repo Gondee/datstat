@@ -6,3 +6,4 @@ export { TerminalButton } from './TerminalButton';
 export { TerminalInput } from './TerminalInput';
 export { InstitutionalMetrics } from './InstitutionalMetrics';
 export { CryptoYieldTracker } from './CryptoYieldTracker';
+export { DataStatusIndicator } from './DataStatusIndicator';
