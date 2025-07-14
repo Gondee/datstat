@@ -96,7 +96,7 @@ export default function Dashboard() {
       },
     },
     {
-      key: 'metrics',
+      key: 'treasuryValue',
       label: 'Treasury Value',
       sortable: true,
       align: 'right',
@@ -123,7 +123,7 @@ export default function Dashboard() {
       ),
     },
     {
-      key: 'metrics',
+      key: 'premiumToNav',
       label: 'Premium to NAV',
       sortable: true,
       align: 'right',
