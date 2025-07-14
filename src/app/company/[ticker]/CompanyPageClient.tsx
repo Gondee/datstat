@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, TrendingUp, DollarSign, Coins, Activity } from 'lucide-react';
 import { useCompanies } from '@/utils/store';
-import { TerminalCard, MetricCard, DataTable, TerminalButton, Column } from '@/components/ui';
+import { TerminalCard, MetricCard, DataTable, TerminalButton, Column, InstitutionalMetrics, CryptoYieldTracker } from '@/components/ui';
 import { formatCurrency, formatPercentage, getChangeColor } from '@/utils/formatters';
 import { TreasuryTransaction } from '@/types';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -14,7 +14,7 @@ interface CompanyPageClientProps {
 }
 
 export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'holdings' | 'transactions' | 'performance'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'holdings' | 'transactions' | 'performance' | 'institutional' | 'yield'>('overview');
   const router = useRouter();
   const companies = useCompanies();
   
@@ -393,6 +393,12 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
           </div>
         );
 
+      case 'institutional':
+        return <InstitutionalMetrics company={company} />;
+
+      case 'yield':
+        return <CryptoYieldTracker company={company} />;
+
       default:
         return null;
     }
@@ -430,10 +436,12 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
             { key: 'holdings', label: 'Holdings' },
             { key: 'transactions', label: 'Transactions' },
             { key: 'performance', label: 'Performance' },
+            { key: 'institutional', label: 'Institutional' },
+            { key: 'yield', label: 'Crypto Yield' },
           ].map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key as 'overview' | 'holdings' | 'transactions' | 'performance')}
+              onClick={() => setActiveTab(tab.key as 'overview' | 'holdings' | 'transactions' | 'performance' | 'institutional' | 'yield')}
               className={`px-4 py-2 text-sm font-mono transition-colors ${
                 activeTab === tab.key
                   ? 'text-green-400 border-b-2 border-green-400'
