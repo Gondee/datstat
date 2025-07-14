@@ -51,7 +51,7 @@ export async function getCompanies(req: NextRequest): Promise<NextResponse> {
           ? { [query.sort]: query.order || 'asc' }
           : { marketCap: 'desc' },
         include: {
-          treasury: true,
+          treasuryHoldings: true,
           marketData: {
             orderBy: { timestamp: 'desc' },
             take: 1,
@@ -80,7 +80,7 @@ export async function getCompany(
     const company = await prisma.company.findUnique({
       where: { ticker: params.ticker.toUpperCase() },
       include: {
-        treasury: {
+        treasuryHoldings: {
           include: {
             transactions: {
               orderBy: { date: 'desc' },
@@ -231,8 +231,8 @@ export async function deleteCompany(
 
 // Helper functions
 async function calculateCompanyMetrics(company: any) {
-  // Get latest crypto prices
-  const cryptoPrices = await prisma.cryptoPrice.findMany({
+  // Get latest crypto prices from MarketData table
+  const cryptoPrices = await prisma.marketData.findMany({
     where: {
       symbol: { in: ['BTC', 'ETH', 'SOL'] },
     },
