@@ -3,10 +3,10 @@ import AnalyticsOrchestrator from '@/utils/analytics/analyticsOrchestrator';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { ticker: string } }
+  { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
     const orchestrator = new AnalyticsOrchestrator();
     
     // Get query parameters

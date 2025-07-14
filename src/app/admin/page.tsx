@@ -162,14 +162,14 @@ export default function AdminDashboard() {
                     Manage Companies
                   </h3>
                   <p className="text-[color:var(--terminal-text-secondary)] text-sm">
-                    Add, edit, or remove companies
+                    Add, edit, and manage treasury companies
                   </p>
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
             </Link>
 
-            <a
+            <Link
               href="/admin/data"
               className="flex items-center justify-between p-4 rounded border border-[color:var(--terminal-border)] hover:border-[color:var(--terminal-accent)] hover:bg-[color:var(--terminal-accent)]/5 transition-colors group"
             >
@@ -177,17 +177,17 @@ export default function AdminDashboard() {
                 <Database className="w-5 h-5 text-[color:var(--terminal-accent)]" />
                 <div>
                   <h3 className="text-[color:var(--terminal-text-primary)] font-medium">
-                    Update Data
+                    Data Management
                   </h3>
                   <p className="text-[color:var(--terminal-text-secondary)] text-sm">
-                    Manage manual data entries
+                    Monitor and refresh data sources
                   </p>
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
             </Link>
 
-            <a
+            <Link
               href="/admin/users"
               className="flex items-center justify-between p-4 rounded border border-[color:var(--terminal-border)] hover:border-[color:var(--terminal-accent)] hover:bg-[color:var(--terminal-accent)]/5 transition-colors group"
             >
@@ -198,12 +198,92 @@ export default function AdminDashboard() {
                     User Management
                   </h3>
                   <p className="text-[color:var(--terminal-text-secondary)] text-sm">
-                    Manage admin users and permissions
+                    Manage user accounts and permissions
                   </p>
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
             </Link>
+          </div>
+        </TerminalCard>
+      </div>
+
+      {/* System Overview */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <TerminalCard 
+          title="System Health"
+          className="lg:col-span-2"
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 rounded bg-[color:var(--terminal-surface)]">
+              <div className="text-2xl font-bold text-[color:var(--terminal-success)] font-mono">
+                99.9%
+              </div>
+              <div className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Uptime
+              </div>
+            </div>
+            <div className="text-center p-4 rounded bg-[color:var(--terminal-surface)]">
+              <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono">
+                2.1s
+              </div>
+              <div className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Avg Response
+              </div>
+            </div>
+            <div className="text-center p-4 rounded bg-[color:var(--terminal-surface)]">
+              <div className="text-2xl font-bold text-[color:var(--terminal-warning)] font-mono">
+                45GB
+              </div>
+              <div className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Storage Used
+              </div>
+            </div>
+            <div className="text-center p-4 rounded bg-[color:var(--terminal-surface)]">
+              <div className="text-2xl font-bold text-[color:var(--terminal-primary)] font-mono">
+                128
+              </div>
+              <div className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Active Users
+              </div>
+            </div>
+          </div>
+        </TerminalCard>
+
+        <TerminalCard title="Quick Stats">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded bg-[color:var(--terminal-surface)]">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Data Refresh Rate
+              </span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
+                5min
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded bg-[color:var(--terminal-surface)]">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">
+                API Rate Limit
+              </span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
+                1000/hr
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded bg-[color:var(--terminal-surface)]">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Cache Hit Rate
+              </span>
+              <span className="text-[color:var(--terminal-success)] font-mono">
+                94.2%
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded bg-[color:var(--terminal-surface)]">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">
+                Error Rate
+              </span>
+              <span className="text-[color:var(--terminal-danger)] font-mono">
+                0.08%
+              </span>
+            </div>
           </div>
         </TerminalCard>
       </div>

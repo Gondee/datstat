@@ -116,7 +116,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 }
 
 // PUT /api/v1/keys/:id - Update API key
-export async function updateApiKey(
+async function updateApiKey(
   req: NextRequest,
   params: { id: string }
 ): Promise<NextResponse> {
@@ -164,7 +164,7 @@ export async function updateApiKey(
 }
 
 // DELETE /api/v1/keys/:id - Delete API key
-export async function deleteApiKey(
+async function deleteApiKey(
   req: NextRequest,
   params: { id: string }
 ): Promise<NextResponse> {

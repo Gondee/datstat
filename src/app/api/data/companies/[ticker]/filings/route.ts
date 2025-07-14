@@ -3,14 +3,14 @@ import { secEdgarService } from '@/services/external/apis/secEdgarService';
 import { logger } from '@/services/external/utils/logger';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     ticker: string;
-  };
+  }>;
 }
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
     const { searchParams } = new URL(request.url);
     const parsed = searchParams.get('parsed');
     const accessionNumber = searchParams.get('accessionNumber');
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const result = await secEdgarService.getRecentQuarterlyFilings(ticker);
     return NextResponse.json(result);
   } catch (error) {
-    logger.error('API', `SEC filings fetch failed for ${params.ticker}`, error as Error);
+    logger.error('API', `SEC filings fetch failed for ${ticker}`, error as Error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch SEC filings',
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
     const body = await request.json();
     const { filingTypes, limit } = body;
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       source: 'SEC EDGAR',
     });
   } catch (error) {
-    logger.error('API', `SEC filings custom fetch failed for ${params.ticker}`, error as Error);
+    logger.error('API', `SEC filings custom fetch failed for ${ticker}`, error as Error);
     return NextResponse.json(
       { 
         error: 'Failed to fetch SEC filings',

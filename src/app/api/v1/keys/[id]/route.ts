@@ -2,15 +2,17 @@ import { NextRequest } from 'next/server';
 import { updateApiKey, deleteApiKey } from '../route';
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export async function PUT(req: NextRequest, { params }: RouteParams) {
-  return updateApiKey(req, params);
+  const resolvedParams = await params;
+  return updateApiKey(req, resolvedParams);
 }
 
 export async function DELETE(req: NextRequest, { params }: RouteParams) {
-  return deleteApiKey(req, params);
+  const resolvedParams = await params;
+  return deleteApiKey(req, resolvedParams);
 }

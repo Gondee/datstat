@@ -4,8 +4,8 @@ import { createOptimizedAPIHandler } from '@/lib/performance/api-optimization';
 
 // Optimized GET handler with caching and compression
 export const GET = createOptimizedAPIHandler(
-  async (request: NextRequest, { params }: { params: { ticker: string } }) => {
-    const { ticker } = params;
+  async (request: NextRequest, { params }: { params: Promise<{ ticker: string }> }) => {
+    const { ticker } = await params;
     const orchestrator = new AnalyticsOrchestrator();
     
     // Get query parameters
@@ -136,10 +136,10 @@ export const GET = createOptimizedAPIHandler(
 // POST endpoint for custom analytics requests
 export async function POST(
   request: NextRequest,
-  { params }: { params: { ticker: string } }
+  { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
     const orchestrator = new AnalyticsOrchestrator();
     const body = await request.json();
     

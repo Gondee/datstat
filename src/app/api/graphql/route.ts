@@ -188,7 +188,7 @@ query CompareCompanies {
 `;
 
 // GET /api/graphql/playground
-export async function getPlayground(req: NextRequest): Promise<NextResponse> {
+async function getPlayground(req: NextRequest): Promise<NextResponse> {
   if (process.env.NODE_ENV === 'production') {
     return new NextResponse('GraphQL Playground disabled in production', { status: 404 });
   }

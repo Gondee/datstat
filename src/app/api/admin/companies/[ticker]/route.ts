@@ -4,10 +4,10 @@ import { prisma } from '@/lib/prisma';
 // GET /api/admin/companies/[ticker] - Get specific company
 export async function GET(
   request: NextRequest,
-  { params }: { params: { ticker: string } }
+  { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
 
     const company = await prisma.company.findUnique({
       where: { ticker: ticker.toUpperCase() },
@@ -49,10 +49,10 @@ export async function GET(
 // PUT /api/admin/companies/[ticker] - Update company
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { ticker: string } }
+  { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
     const body = await request.json();
 
     const {
@@ -188,10 +188,10 @@ export async function PUT(
 // DELETE /api/admin/companies/[ticker] - Delete company
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { ticker: string } }
+  { params }: { params: Promise<{ ticker: string }> }
 ) {
   try {
-    const { ticker } = params;
+    const { ticker } = await params;
 
     // Check if company exists
     const existingCompany = await prisma.company.findUnique({
