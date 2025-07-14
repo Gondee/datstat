@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -23,7 +23,20 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState<string>('');
   const router = useRouter();
+
+  // Update timestamp on client side only to avoid hydration mismatch
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleString());
+    };
+    
+    updateTime(); // Set initial time
+    const interval = setInterval(updateTime, 1000); // Update every second
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -142,7 +155,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <Menu className="w-6 h-6 text-[color:var(--terminal-text-secondary)]" />
             </button>
             <div className="text-[color:var(--terminal-text-secondary)] text-sm font-mono">
-              Last updated: {new Date().toLocaleString()}
+              Last updated: {currentTime || 'Loading...'}
             </div>
           </div>
         </div>

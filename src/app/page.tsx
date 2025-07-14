@@ -34,14 +34,14 @@ export default function Dashboard() {
   
   const companies = useCompanies();
 
-  // Fetch companies on mount
+  // Fetch companies on mount and when no data is available
   useEffect(() => {
-    // Only fetch if we haven't fetched recently (within 5 minutes)
-    const shouldFetch = !lastFetch || new Date().getTime() - new Date(lastFetch).getTime() > 5 * 60 * 1000;
+    // Always fetch if no companies data, otherwise only fetch if we haven't fetched recently (within 5 minutes)
+    const shouldFetch = companies.length === 0 || !lastFetch || new Date().getTime() - new Date(lastFetch).getTime() > 5 * 60 * 1000;
     if (shouldFetch) {
       fetchCompanies();
     }
-  }, [fetchCompanies, lastFetch]);
+  }, [fetchCompanies, lastFetch, companies.length]);
 
   // Keyboard navigation
   useKeyboardShortcuts({
