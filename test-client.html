@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DAT Analytics Test</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .status { margin: 10px 0; }
+        .success { color: green; }
+        .error { color: red; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>DAT Analytics Platform - Client Test</h1>
+    <div id="status"></div>
+    <div id="console-log" class="log"></div>
+    
+    <script>
+        const statusEl = document.getElementById('status');
+        const logEl = document.getElementById('console-log');
+        
+        // Override console methods to capture logs
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        const addLog = (type, ...args) => {
+            const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+            logEl.innerHTML += `<div>[${type}] ${msg}</div>`;
+        };
+        
+        console.log = (...args) => { originalLog(...args); addLog('LOG', ...args); };
+        console.error = (...args) => { originalError(...args); addLog('ERROR', ...args); };
+        console.warn = (...args) => { originalWarn(...args); addLog('WARN', ...args); };
+        
+        // Test loading the app
+        async function testApp() {
+            statusEl.innerHTML = '<div class="status">Testing connection to app...</div>';
+            
+            try {
+                // Test API endpoint
+                const apiResponse = await fetch('http://localhost:3007/api/test');
+                const apiText = await apiResponse.text();
+                
+                if (apiResponse.ok) {
+                    statusEl.innerHTML += '<div class="status success">✓ API endpoint working</div>';
+                    console.log('API Response:', apiText);
+                } else {
+                    statusEl.innerHTML += '<div class="status error">✗ API returned error: ' + apiResponse.status + '</div>';
+                    console.error('API Error:', apiText);
+                }
+                
+                // Test homepage
+                const homeResponse = await fetch('http://localhost:3007/');
+                const homeText = await homeResponse.text();
+                
+                if (homeResponse.ok && !homeText.includes('Internal Server Error')) {
+                    statusEl.innerHTML += '<div class="status success">✓ Homepage loads without server error</div>';
+                    
+                    // Check for Next.js app
+                    if (homeText.includes('__NEXT_DATA__')) {
+                        statusEl.innerHTML += '<div class="status success">✓ Next.js app detected</div>';
+                    } else {
+                        statusEl.innerHTML += '<div class="status error">✗ Next.js app not detected</div>';
+                    }
+                } else {
+                    statusEl.innerHTML += '<div class="status error">✗ Homepage returns error</div>';
+                    console.error('Homepage error:', homeText.substring(0, 200));
+                }
+                
+                // Test if app loads in iframe
+                statusEl.innerHTML += '<div class="status">Loading app in iframe...</div>';
+                const iframe = document.createElement('iframe');
+                iframe.src = 'http://localhost:3007/';
+                iframe.width = '100%';
+                iframe.height = '600px';
+                iframe.onload = () => {
+                    statusEl.innerHTML += '<div class="status success">✓ App loaded in iframe</div>';
+                };
+                iframe.onerror = (e) => {
+                    statusEl.innerHTML += '<div class="status error">✗ Failed to load app in iframe</div>';
+                    console.error('Iframe error:', e);
+                };
+                document.body.appendChild(iframe);
+                
+            } catch (error) {
+                statusEl.innerHTML += '<div class="status error">✗ Test failed: ' + error.message + '</div>';
+                console.error('Test error:', error);
+            }
+        }
+        
+        // Handle any uncaught errors
+        window.onerror = (msg, url, lineNo, columnNo, error) => {
+            console.error('Window error:', msg, 'at', url, lineNo + ':' + columnNo);
+            statusEl.innerHTML += '<div class="status error">✗ Client-side error detected</div>';
+            return true;
+        };
+        
+        // Run test
+        testApp();
+    </script>
+</body>
+</html>

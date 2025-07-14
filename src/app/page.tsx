@@ -82,14 +82,16 @@ export default function Dashboard() {
       ),
     },
     {
-      key: 'treasury',
+      key: 'treasury' as keyof CompanyWithMetrics,
       label: 'Primary Asset',
       render: (_, row) => {
-        const primaryHolding = row.treasury[0];
-        return (
+        const primaryHolding = row.treasury?.[0];
+        return primaryHolding ? (
           <span className="text-[color:var(--terminal-accent-light)] font-mono">
             {primaryHolding.crypto}
           </span>
+        ) : (
+          <span className="text-[color:var(--terminal-text-secondary)]">-</span>
         );
       },
     },

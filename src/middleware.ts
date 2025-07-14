@@ -131,7 +131,8 @@ export function middleware(request: NextRequest) {
   
   // CORS headers for API routes
   if (pathname.startsWith('/api/')) {
-    response.headers.set('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+    const frontendUrl = typeof process !== 'undefined' ? process.env?.FRONTEND_URL : undefined;
+    response.headers.set('Access-Control-Allow-Origin', frontendUrl || '*');
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     response.headers.set('Access-Control-Allow-Credentials', 'true');
@@ -178,10 +179,11 @@ function redirectToLogin(request: NextRequest, reason?: string): NextResponse {
 
 // Handle preflight OPTIONS requests for CORS
 export function handleOptions(request: NextRequest): NextResponse {
+  const frontendUrl = typeof process !== 'undefined' ? process.env?.FRONTEND_URL : undefined;
   return new NextResponse(null, {
     status: 200,
     headers: {
-      'Access-Control-Allow-Origin': process.env.FRONTEND_URL || '*',
+      'Access-Control-Allow-Origin': frontendUrl || '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
       'Access-Control-Allow-Credentials': 'true',
