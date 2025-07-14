@@ -48,6 +48,7 @@ interface DATState {
   removeFromWatchlist: (ticker: string) => void;
   updateFilters: (filters: Partial<FilterState>) => void;
   setSorting: (field: SortField, direction?: SortDirection) => void;
+  applyFiltersAndSort: () => void;
   refreshData: () => Promise<void>;
   fetchCompanies: () => Promise<void>;
   fetchCompany: (ticker: string) => Promise<CompanyWithMetrics | null>;

@@ -101,15 +101,15 @@ export class AnalyticsService {
         dilutionAnalysis,
         summary: {
           overallScore: financialHealth.overallScore,
-          riskLevel: riskAnalysis.overallRisk.level,
-          currentYield: yieldTracking.currentYield.totalYieldPercent,
-          mNavPerShare: mNavAnalysis.current.mNavPerShare,
+          riskLevel: riskAnalysis.riskScore.category,
+          currentYield: yieldTracking.totalCryptoYield.yieldPercent,
+          mNavPerShare: mNavAnalysis.basicNAVPerShare,
           potentialDilution: dilutionAnalysis.currentDilution.dilutionPercent
         }
       };
 
       // Cache for 5 minutes
-      queryCache.set(cacheKey, result, 5 * 60 * 1000);
+      queryCache.set(cacheKey, result);
       
       return result;
     } catch (error) {
@@ -137,7 +137,7 @@ export class AnalyticsService {
     
     const riskAnalysis = await this.riskEngine.calculateRiskMetrics(companyData, [], [], undefined);
     
-    queryCache.set(cacheKey, riskAnalysis, 10 * 60 * 1000);
+    queryCache.set(cacheKey, riskAnalysis);
     return riskAnalysis;
   }
 
@@ -158,7 +158,7 @@ export class AnalyticsService {
     const companyData = this.transformCompanyData(company);
     const yieldTracking = await this.cryptoYieldEngine.calculateCryptoYield(companyData);
     
-    queryCache.set(cacheKey, yieldTracking, 15 * 60 * 1000);
+    queryCache.set(cacheKey, yieldTracking);
     return yieldTracking;
   }
 
@@ -181,7 +181,7 @@ export class AnalyticsService {
     
     const mNavAnalysis = await this.mNavEngine.calculateRealTimeNAV(companyData, [], companyData.marketData.price);
     
-    queryCache.set(cacheKey, mNavAnalysis, 5 * 60 * 1000);
+    queryCache.set(cacheKey, mNavAnalysis);
     return mNavAnalysis;
   }
 
@@ -201,9 +201,9 @@ export class AnalyticsService {
     const validCompanies = companies.filter(c => c !== null) as CompanyWithRelations[];
     const companyData = validCompanies.map(c => this.transformCompanyData(c));
     
-    const comparison = await this.comparativeEngine.compareCompanies(companyData);
+    const comparison = await this.comparativeEngine.performComparativeAnalysis(companyData, new Map(), new Map());
     
-    queryCache.set(cacheKey, comparison, 10 * 60 * 1000);
+    queryCache.set(cacheKey, comparison);
     return comparison;
   }
 
@@ -319,7 +319,7 @@ export class AnalyticsService {
         stockOptions: dbCompany.capitalStructure.stockOptions,
         restrictedStockUnits: dbCompany.capitalStructure.restrictedStockUnits,
         performanceStockUnits: dbCompany.capitalStructure.performanceStockUnits,
-        convertibleDebt: dbCompany.capitalStructure.convertibleDebt.map(d => ({
+        convertibleDebt: dbCompany.capitalStructure.convertibleDebt.map((d: any) => ({
           issueDate: d.issueDate,
           maturityDate: d.maturityDate,
           principal: d.principal,
@@ -330,7 +330,7 @@ export class AnalyticsService {
           isOutstanding: d.isOutstanding,
           notes: d.notes || ''
         })),
-        warrants: dbCompany.capitalStructure.warrants.map(w => ({
+        warrants: dbCompany.capitalStructure.warrants.map((w: any) => ({
           issueDate: w.issueDate,
           expirationDate: w.expirationDate,
           strikePrice: w.strikePrice,
