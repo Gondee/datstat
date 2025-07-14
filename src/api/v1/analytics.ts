@@ -330,7 +330,7 @@ export async function getAnalyticsRankings(req: NextRequest): Promise<NextRespon
     const topCompanies = sortedCompanies.slice(0, limit);
 
     // Calculate percentiles
-    const rankedCompanies = topCompanies.map((company, index) => ({
+    const companiesWithRankings = topCompanies.map((company, index) => ({
       ...company,
       rank: index + 1,
       percentile: ((sortedCompanies.length - index) / sortedCompanies.length) * 100,
@@ -340,7 +340,7 @@ export async function getAnalyticsRankings(req: NextRequest): Promise<NextRespon
       metric,
       sector,
       totalCompanies: sortedCompanies.length,
-      rankings: rankedCompanies,
+      rankings: companiesWithRankings,
       statistics: calculateStatistics(sortedCompanies, metric),
       timestamp: new Date().toISOString(),
     });
