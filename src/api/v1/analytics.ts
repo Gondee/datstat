@@ -141,7 +141,17 @@ export async function getComparativeAnalytics(req: NextRequest): Promise<NextRes
     );
 
     // TODO: Implement comparative analysis when function signature is fixed
-    const comparison = { bestPerformers: [], worstPerformers: [], averages: {} };
+    const comparison = { 
+      bestPerformers: [], 
+      worstPerformers: [], 
+      averages: {},
+      rankings: {
+        treasuryValue: [companyMetrics[0]],
+        navDiscount: [companyMetrics[0]],
+        cryptoYield: [companyMetrics[0]],
+        riskScore: [companyMetrics[0]]
+      }
+    };
 
     // Calculate correlation matrix
     const correlationMatrix = await calculateCorrelationMatrix(companies);
