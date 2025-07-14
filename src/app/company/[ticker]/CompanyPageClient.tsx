@@ -25,8 +25,8 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
       <div className="min-h-screen bg-black p-6 flex items-center justify-center">
         <TerminalCard>
           <div className="text-center py-8">
-            <h2 className="text-xl text-green-400 mb-4">Company Not Found</h2>
-            <p className="text-green-500/70 mb-4">
+            <h2 className="text-xl text-[color:var(--terminal-accent)] mb-4">Company Not Found</h2>
+            <p className="text-[color:var(--terminal-text-secondary)] mb-4">
               No company found with ticker: {ticker.toUpperCase()}
             </p>
             <TerminalButton onClick={() => router.push('/')}>
@@ -63,7 +63,7 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
       label: 'Type',
       render: (value) => (
         <span className={`px-2 py-1 rounded text-xs font-mono uppercase ${
-          value === 'purchase' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          value === 'purchase' ? 'bg-[color:var(--terminal-success)]/20 text-[color:var(--terminal-success)]' : 'bg-[color:var(--terminal-danger)]/20 text-[color:var(--terminal-danger)]'
         }`}>
           {value as string}
         </span>
@@ -103,17 +103,17 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-green-400 font-semibold text-lg">{company.name}</h3>
-                    <p className="text-green-500/70 text-sm">{company.description}</p>
+                    <h3 className="text-[color:var(--terminal-accent)] font-semibold text-lg">{company.name}</h3>
+                    <p className="text-[color:var(--terminal-text-secondary)] text-sm">{company.description}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-green-500/70">Sector:</span>
-                      <p className="text-green-100">{company.sector}</p>
+                      <span className="text-[color:var(--terminal-text-secondary)]">Sector:</span>
+                      <p className="text-[color:var(--terminal-text-primary)]">{company.sector}</p>
                     </div>
                     <div>
-                      <span className="text-green-500/70">Shares Outstanding:</span>
-                      <p className="text-green-100 font-mono">{company.sharesOutstanding.toLocaleString()}</p>
+                      <span className="text-[color:var(--terminal-text-secondary)]">Shares Outstanding:</span>
+                      <p className="text-[color:var(--terminal-text-primary)] font-mono">{company.sharesOutstanding.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
@@ -121,20 +121,20 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-green-500/70">Market Cap:</span>
-                      <p className="text-green-100 font-mono">{formatCurrency(company.marketCap, 0)}</p>
+                      <span className="text-[color:var(--terminal-text-secondary)]">Market Cap:</span>
+                      <p className="text-[color:var(--terminal-text-primary)] font-mono">{formatCurrency(company.marketCap, 0)}</p>
                     </div>
                     <div>
-                      <span className="text-green-500/70">Total Debt:</span>
-                      <p className="text-green-100 font-mono">{formatCurrency(company.totalDebt, 0)}</p>
+                      <span className="text-[color:var(--terminal-text-secondary)]">Total Debt:</span>
+                      <p className="text-[color:var(--terminal-text-primary)] font-mono">{formatCurrency(company.totalDebt, 0)}</p>
                     </div>
                     <div>
-                      <span className="text-green-500/70">Shareholders&apos; Equity:</span>
-                      <p className="text-green-100 font-mono">{formatCurrency(company.shareholdersEquity, 0)}</p>
+                      <span className="text-[color:var(--terminal-text-secondary)]">Shareholders&apos; Equity:</span>
+                      <p className="text-[color:var(--terminal-text-primary)] font-mono">{formatCurrency(company.shareholdersEquity, 0)}</p>
                     </div>
                     <div>
-                      <span className="text-green-500/70">Last Updated:</span>
-                      <p className="text-green-100 font-mono text-xs">
+                      <span className="text-[color:var(--terminal-text-secondary)]">Last Updated:</span>
+                      <p className="text-[color:var(--terminal-text-primary)] font-mono text-xs">
                         {new Date(company.lastUpdated).toLocaleString()}
                       </p>
                     </div>
@@ -420,17 +420,17 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
           
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-3xl font-bold text-green-400 font-mono">{company.ticker}</h1>
+              <h1 className="text-3xl font-bold text-[color:var(--terminal-accent)] font-mono">{company.ticker}</h1>
               <span className={`text-lg ${getChangeColor(company.marketData.change24hPercent)}`}>
                 {formatPercentage(company.marketData.change24hPercent)}
               </span>
             </div>
-            <p className="text-green-500/70">{company.name}</p>
+            <p className="text-[color:var(--terminal-text-secondary)]">{company.name}</p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="flex space-x-1 border-b border-green-500/30">
+        <div className="flex space-x-1 border-b border-[color:var(--terminal-border)]">
           {[
             { key: 'overview', label: 'Overview' },
             { key: 'holdings', label: 'Holdings' },
@@ -444,8 +444,8 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
               onClick={() => setActiveTab(tab.key as 'overview' | 'holdings' | 'transactions' | 'performance' | 'institutional' | 'yield')}
               className={`px-4 py-2 text-sm font-mono transition-colors ${
                 activeTab === tab.key
-                  ? 'text-green-400 border-b-2 border-green-400'
-                  : 'text-green-500/70 hover:text-green-400'
+                  ? 'text-[color:var(--terminal-accent)] border-b-2 border-[color:var(--terminal-accent)]'
+                  : 'text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-accent)]'
               }`}
             >
               {tab.label}

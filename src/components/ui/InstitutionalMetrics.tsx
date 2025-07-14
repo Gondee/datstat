@@ -231,29 +231,29 @@ export function InstitutionalMetrics({ company }: InstitutionalMetricsProps) {
       <TerminalCard title="Capital Structure Analysis">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <h4 className="text-green-400 font-semibold">Share Count Analysis</h4>
+            <h4 className="text-[color:var(--terminal-accent)] font-semibold">Share Count Analysis</h4>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-green-500/70">Basic Shares:</span>
-                <span className="text-green-100 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Basic Shares:</span>
+                <span className="text-[color:var(--terminal-text-primary)] font-mono">
                   {company.capitalStructure.sharesBasic.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Diluted Current:</span>
-                <span className="text-green-100 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Diluted Current:</span>
+                <span className="text-[color:var(--terminal-text-primary)] font-mono">
                   {company.capitalStructure.sharesDilutedCurrent.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Assumed Diluted:</span>
-                <span className="text-red-300 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Assumed Diluted:</span>
+                <span className="text-[color:var(--terminal-danger)] font-mono">
                   {company.capitalStructure.sharesDilutedAssumed.toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Float:</span>
-                <span className="text-green-100 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Float:</span>
+                <span className="text-[color:var(--terminal-text-primary)] font-mono">
                   {company.capitalStructure.sharesFloat.toLocaleString()}
                 </span>
               </div>
@@ -261,29 +261,29 @@ export function InstitutionalMetrics({ company }: InstitutionalMetricsProps) {
           </div>
           
           <div className="space-y-4">
-            <h4 className="text-green-400 font-semibold">Ownership Structure</h4>
+            <h4 className="text-[color:var(--terminal-accent)] font-semibold">Ownership Structure</h4>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-green-500/70">Insider Owned:</span>
-                <span className="text-green-100 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Insider Owned:</span>
+                <span className="text-[color:var(--terminal-text-primary)] font-mono">
                   {formatPercentage((company.capitalStructure.sharesInsiderOwned / company.capitalStructure.sharesBasic) * 100)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Institutional:</span>
-                <span className="text-green-100 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Institutional:</span>
+                <span className="text-[color:var(--terminal-text-primary)] font-mono">
                   {formatPercentage((company.capitalStructure.sharesInstitutionalOwned / company.capitalStructure.sharesBasic) * 100)}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Convertible Debt:</span>
-                <span className="text-yellow-300 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Convertible Debt:</span>
+                <span className="text-[color:var(--terminal-warning)] font-mono">
                   {company.capitalStructure.convertibleDebt.length} issues
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-green-500/70">Outstanding Warrants:</span>
-                <span className="text-yellow-300 font-mono">
+                <span className="text-[color:var(--terminal-text-secondary)]">Outstanding Warrants:</span>
+                <span className="text-[color:var(--terminal-warning)] font-mono">
                   {company.capitalStructure.warrants.reduce((sum, w) => sum + w.totalWarrants, 0).toLocaleString()}
                 </span>
               </div>

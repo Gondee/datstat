@@ -55,45 +55,45 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
             </div>
           </div>
 
-          <div className="p-4 border border-green-500/20 rounded">
+          <div className="p-4 border border-[color:var(--terminal-border)] rounded">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-green-500/70 text-sm">Treasury per Share</span>
-              <Activity className="w-4 h-4 text-blue-400" />
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Treasury per Share</span>
+              <Activity className="w-4 h-4 text-[color:var(--terminal-primary)]" />
             </div>
-            <div className="text-2xl font-bold text-green-400 font-mono">
+            <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono">
               ${treasuryPerShare.toFixed(0)}
             </div>
-            <div className="text-xs text-green-500/70 mt-1">
+            <div className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
               NAV: ${navPerShare.toFixed(0)}
             </div>
           </div>
 
-          <div className="p-4 border border-green-500/20 rounded">
+          <div className="p-4 border border-[color:var(--terminal-border)] rounded">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-green-500/70 text-sm">Premium to NAV</span>
-              <TrendingUp className="w-4 h-4 text-purple-400" />
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Premium to NAV</span>
+              <TrendingUp className="w-4 h-4 text-[color:var(--terminal-accent)]" />
             </div>
             <div className={`text-2xl font-bold font-mono ${
-              premiumToNav > 0 ? 'text-green-400' : 'text-red-400'
+              premiumToNav > 0 ? 'text-[color:var(--terminal-success)]' : 'text-[color:var(--terminal-danger)]'
             }`}>
               {formatPercentage(premiumToNav)}
             </div>
-            <div className="text-xs text-green-500/70 mt-1">
+            <div className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
               {premiumToNav > 0 ? 'Trading at premium' : 'Trading at discount'}
             </div>
           </div>
 
-          <div className="p-4 border border-green-500/20 rounded">
+          <div className="p-4 border border-[color:var(--terminal-border)] rounded">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-green-500/70 text-sm">Dilution Impact</span>
-              <Activity className="w-4 h-4 text-orange-400" />
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Dilution Impact</span>
+              <Activity className="w-4 h-4 text-[color:var(--terminal-warning)]" />
             </div>
             <div className={`text-2xl font-bold font-mono ${
-              metrics.dilutionMetrics.treasuryAccretionRate > 0 ? 'text-green-400' : 'text-red-400'
+              metrics.dilutionMetrics.treasuryAccretionRate > 0 ? 'text-[color:var(--terminal-success)]' : 'text-[color:var(--terminal-danger)]'
             }`}>
               {formatPercentage(metrics.dilutionMetrics.treasuryAccretionRate)}
             </div>
-            <div className="text-xs text-green-500/70 mt-1">
+            <div className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
               Treasury accretion rate
             </div>
           </div>
@@ -143,54 +143,54 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
       <TerminalCard title="Yield Breakdown by Asset">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {metrics.cryptoYield.btcYield && (
-            <div className="p-4 border border-green-500/20 rounded">
+            <div className="p-4 border border-[color:var(--terminal-border)] rounded">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
-                  <span className="text-green-400 font-semibold">Bitcoin</span>
+                  <div className="w-3 h-3 bg-[color:var(--terminal-warning)] rounded-full mr-2"></div>
+                  <span className="text-[color:var(--terminal-accent)] font-semibold">Bitcoin</span>
                 </div>
-                <span className="text-xs text-green-500/70">BTC</span>
+                <span className="text-xs text-[color:var(--terminal-text-secondary)]">BTC</span>
               </div>
-              <div className="text-2xl font-bold text-green-400 font-mono mb-2">
+              <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono mb-2">
                 {formatPercentage(metrics.cryptoYield.btcYield)}
               </div>
-              <div className="text-xs text-green-500/70">
+              <div className="text-xs text-[color:var(--terminal-text-secondary)]">
                 Primary treasury asset
               </div>
             </div>
           )}
 
           {metrics.cryptoYield.ethYield && (
-            <div className="p-4 border border-green-500/20 rounded">
+            <div className="p-4 border border-[color:var(--terminal-border)] rounded">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-                  <span className="text-green-400 font-semibold">Ethereum</span>
+                  <div className="w-3 h-3 bg-[color:var(--terminal-primary)] rounded-full mr-2"></div>
+                  <span className="text-[color:var(--terminal-accent)] font-semibold">Ethereum</span>
                 </div>
-                <span className="text-xs text-green-500/70">ETH</span>
+                <span className="text-xs text-[color:var(--terminal-text-secondary)]">ETH</span>
               </div>
-              <div className="text-2xl font-bold text-green-400 font-mono mb-2">
+              <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono mb-2">
                 {formatPercentage(metrics.cryptoYield.ethYield)}
               </div>
-              <div className="text-xs text-green-500/70">
+              <div className="text-xs text-[color:var(--terminal-text-secondary)]">
                 Staking rewards included
               </div>
             </div>
           )}
 
           {metrics.cryptoYield.solYield && (
-            <div className="p-4 border border-green-500/20 rounded">
+            <div className="p-4 border border-[color:var(--terminal-border)] rounded">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-                  <span className="text-green-400 font-semibold">Solana</span>
+                  <div className="w-3 h-3 bg-[color:var(--terminal-accent-light)] rounded-full mr-2"></div>
+                  <span className="text-[color:var(--terminal-accent)] font-semibold">Solana</span>
                 </div>
-                <span className="text-xs text-green-500/70">SOL</span>
+                <span className="text-xs text-[color:var(--terminal-text-secondary)]">SOL</span>
               </div>
-              <div className="text-2xl font-bold text-green-400 font-mono mb-2">
+              <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono mb-2">
                 {formatPercentage(metrics.cryptoYield.solYield)}
               </div>
-              <div className="text-xs text-green-500/70">
+              <div className="text-xs text-[color:var(--terminal-text-secondary)]">
                 High-growth strategy
               </div>
             </div>

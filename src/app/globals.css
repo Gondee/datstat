@@ -1,33 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  /* Professional terminal color scheme inspired by Parsec/Bloomberg */
-  --terminal-black: #0a0a0b;
-  --terminal-dark: #1a1a1c;
-  --terminal-surface: #242428;
-  --terminal-border: #2a2a2e;
-  --terminal-primary: #6b7c93;
-  --terminal-primary-hover: #8291a8;
-  --terminal-secondary: #4a525e;
-  --terminal-accent: #7c6fb1;
-  --terminal-accent-light: #9b8cc7;
-  --terminal-success: #5a9679;
-  --terminal-warning: #b8956a;
-  --terminal-danger: #c9665e;
-  --terminal-muted: #6b7280;
-  --terminal-text-primary: #e2e4e8;
-  --terminal-text-secondary: #9ca3af;
-  --terminal-text-muted: #6b7280;
+  /* Retro Finance Terminal - Cool Professional Edge */
+  --terminal-black: #0b0e14;
+  --terminal-dark: #1c1f26;
+  --terminal-surface: #252932;
+  --terminal-border: #2f3441;
+  --terminal-primary: #5294cf;
+  --terminal-primary-hover: #6ba3d6;
+  --terminal-secondary: #4c566a;
+  --terminal-accent: #b48ead;
+  --terminal-accent-light: #c79cc8;
+  --terminal-success: #5e81ac;
+  --terminal-warning: #ebcb8b;
+  --terminal-danger: #bf616a;
+  --terminal-muted: #6b7394;
+  --terminal-text-primary: #eceff4;
+  --terminal-text-secondary: #a3a9ce;
+  --terminal-text-muted: #6b7394;
   
-  /* Chart colors */
-  --chart-primary: #7c6fb1;
-  --chart-secondary: #5a9679;
-  --chart-tertiary: #b8956a;
-  --chart-quaternary: #6b7c93;
+  /* Chart colors - Finance terminal palette */
+  --chart-primary: #5294cf;
+  --chart-secondary: #b48ead;
+  --chart-tertiary: #ebcb8b;
+  --chart-quaternary: #5e81ac;
+  --chart-danger: #bf616a;
+  --chart-success: #5e81ac;
   
   /* Original variables updated */
-  --background: #0a0a0b;
-  --foreground: #e2e4e8;
+  --background: #0b0e14;
+  --foreground: #eceff4;
 }
 
 @theme inline {
@@ -39,8 +41,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0b;
-    --foreground: #e2e4e8;
+    --background: #0b0e14;
+    --foreground: #eceff4;
   }
 }
 
