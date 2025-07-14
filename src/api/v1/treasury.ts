@@ -176,13 +176,20 @@ export async function addTreasuryTransaction(
   try {
     // Start transaction
     const result = await prisma.$transaction(async (tx) => {
+      // First find the company
+      const company = await tx.company.findUnique({
+        where: { ticker: params.ticker.toUpperCase() },
+      });
+
+      if (!company) {
+        throw new Error('Company not found');
+      }
+
       // Get current holding
-      const holding = await tx.treasuryHolding.findUnique({
+      const holding = await tx.treasuryHolding.findFirst({
         where: {
-          companyTicker_crypto: {
-            companyTicker: params.ticker.toUpperCase(),
-            crypto: params.crypto.toUpperCase() as any,
-          },
+          companyId: company.id,
+          crypto: params.crypto.toUpperCase() as any,
         },
       });
 
@@ -190,11 +197,14 @@ export async function addTreasuryTransaction(
         // Create new holding if it doesn't exist
         const newHolding = await tx.treasuryHolding.create({
           data: {
-            companyTicker: params.ticker.toUpperCase(),
+            companyId: company.id,
             crypto: params.crypto.toUpperCase() as any,
             amount: transaction!.amount,
             averageCostBasis: transaction!.pricePerUnit,
             totalCost: transaction!.totalCost,
+            currentValue: transaction!.totalCost, // Initial value equals cost
+            unrealizedGain: 0,
+            unrealizedGainPercent: 0,
           },
         });
 
@@ -202,7 +212,10 @@ export async function addTreasuryTransaction(
         const txRecord = await tx.treasuryTransaction.create({
           data: {
             ...transaction!,
+            companyId: company.id,
             holdingId: newHolding.id,
+            type: transaction!.type.toUpperCase() as any,
+            fundingMethod: transaction!.fundingMethod?.toUpperCase() as any,
           },
         });
 
@@ -236,7 +249,10 @@ export async function addTreasuryTransaction(
       const txRecord = await tx.treasuryTransaction.create({
         data: {
           ...transaction!,
+          companyId: company.id,
           holdingId: holding.id,
+          type: transaction!.type.toUpperCase() as any,
+          fundingMethod: transaction!.fundingMethod?.toUpperCase() as any,
         },
       });
 
