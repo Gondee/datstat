@@ -48,7 +48,7 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
   ];
 
   // Colors for pie chart
-  const COLORS = ['#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+  const COLORS = ['var(--chart-primary)', 'var(--chart-tertiary)', 'var(--chart-danger)', 'var(--chart-quaternary)'];
 
   // Transaction columns
   const transactionColumns: Column<TreasuryTransaction>[] = [
@@ -176,21 +176,21 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
               <TerminalCard title="Stock vs Treasury Performance">
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={historicalData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#10b981" opacity={0.1} />
-                    <XAxis dataKey="date" stroke="#10b981" />
-                    <YAxis stroke="#10b981" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
+                    <XAxis dataKey="date" stroke="var(--terminal-text-secondary)" />
+                    <YAxis stroke="var(--terminal-text-secondary)" />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#000', 
-                        border: '1px solid #10b981',
+                        backgroundColor: 'var(--terminal-surface)', 
+                        border: '1px solid var(--terminal-border)',
                         borderRadius: '4px',
-                        color: '#10b981'
+                        color: 'var(--terminal-text-primary)'
                       }}
                     />
                     <Line 
                       type="monotone" 
                       dataKey="stockPrice" 
-                      stroke="#10b981" 
+                      stroke="var(--chart-primary)" 
                       strokeWidth={2}
                       name="Stock Price"
                     />
@@ -201,21 +201,21 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
               <TerminalCard title="Premium to NAV Trend">
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={historicalData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#10b981" opacity={0.1} />
-                    <XAxis dataKey="date" stroke="#10b981" />
-                    <YAxis stroke="#10b981" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
+                    <XAxis dataKey="date" stroke="var(--terminal-text-secondary)" />
+                    <YAxis stroke="var(--terminal-text-secondary)" />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#000', 
-                        border: '1px solid #10b981',
+                        backgroundColor: 'var(--terminal-surface)', 
+                        border: '1px solid var(--terminal-border)',
                         borderRadius: '4px',
-                        color: '#10b981'
+                        color: 'var(--terminal-text-primary)'
                       }}
                     />
                     <Line 
                       type="monotone" 
                       dataKey="premiumToNav" 
-                      stroke="#f59e0b" 
+                      stroke="var(--chart-tertiary)" 
                       strokeWidth={2}
                       name="Premium to NAV %"
                     />
@@ -234,33 +234,33 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
                 <TerminalCard key={holding.crypto} title={`${holding.crypto} Holdings`}>
                   <div className="space-y-4">
                     <div className="text-center">
-                      <h3 className="text-2xl font-bold text-green-400 font-mono">
+                      <h3 className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono">
                         {holding.amount.toLocaleString()}
                       </h3>
-                      <p className="text-green-500/70 text-sm">{holding.crypto}</p>
+                      <p className="text-[color:var(--terminal-text-secondary)] text-sm">{holding.crypto}</p>
                     </div>
                     
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-green-500/70">Current Value:</span>
-                        <span className="text-green-100 font-mono">
+                        <span className="text-[color:var(--terminal-text-secondary)]">Current Value:</span>
+                        <span className="text-[color:var(--terminal-text-primary)] font-mono">
                           {formatCurrency(holding.currentValue, 0)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-green-500/70">Avg Cost Basis:</span>
-                        <span className="text-green-100 font-mono">
+                        <span className="text-[color:var(--terminal-text-secondary)]">Avg Cost Basis:</span>
+                        <span className="text-[color:var(--terminal-text-primary)] font-mono">
                           {formatCurrency(holding.averageCostBasis)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-green-500/70">Total Cost:</span>
-                        <span className="text-green-100 font-mono">
+                        <span className="text-[color:var(--terminal-text-secondary)]">Total Cost:</span>
+                        <span className="text-[color:var(--terminal-text-primary)] font-mono">
                           {formatCurrency(holding.totalCost, 0)}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-green-500/70">Unrealized Gain:</span>
+                        <span className="text-[color:var(--terminal-text-secondary)]">Unrealized Gain:</span>
                         <span className={`font-mono ${getChangeColor(holding.unrealizedGainPercent)}`}>
                           {formatCurrency(holding.unrealizedGain, 0)} ({formatPercentage(holding.unrealizedGainPercent)})
                         </span>
@@ -268,14 +268,14 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
                       {holding.stakingYield && (
                         <>
                           <div className="flex justify-between">
-                            <span className="text-green-500/70">Staking Yield:</span>
-                            <span className="text-green-100 font-mono">
+                            <span className="text-[color:var(--terminal-text-secondary)]">Staking Yield:</span>
+                            <span className="text-[color:var(--terminal-text-primary)] font-mono">
                               {holding.stakingYield}%
                             </span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-green-500/70">Staked Amount:</span>
-                            <span className="text-green-100 font-mono">
+                            <span className="text-[color:var(--terminal-text-secondary)]">Staked Amount:</span>
+                            <span className="text-[color:var(--terminal-text-primary)] font-mono">
                               {holding.stakedAmount?.toLocaleString()} {holding.crypto}
                             </span>
                           </div>
@@ -310,10 +310,10 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
                     </Pie>
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#000', 
-                        border: '1px solid #10b981',
+                        backgroundColor: 'var(--terminal-surface)', 
+                        border: '1px solid var(--terminal-border)',
                         borderRadius: '4px',
-                        color: '#10b981'
+                        color: 'var(--terminal-text-primary)'
                       }}
                       formatter={(value: number) => [formatCurrency(value, 0), 'Value']}
                     />
@@ -342,28 +342,28 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
             <TerminalCard title="Performance Comparison">
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={historicalData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#10b981" opacity={0.1} />
-                  <XAxis dataKey="date" stroke="#10b981" />
-                  <YAxis stroke="#10b981" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
+                  <XAxis dataKey="date" stroke="var(--terminal-text-secondary)" />
+                  <YAxis stroke="var(--terminal-text-secondary)" />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#000', 
-                      border: '1px solid #10b981',
+                      backgroundColor: 'var(--terminal-surface)', 
+                      border: '1px solid var(--terminal-border)',
                       borderRadius: '4px',
-                      color: '#10b981'
+                      color: 'var(--terminal-text-primary)'
                     }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="stockPrice" 
-                    stroke="#10b981" 
+                    stroke="var(--chart-primary)" 
                     strokeWidth={2}
                     name="Stock Price"
                   />
                   <Line 
                     type="monotone" 
                     dataKey="premiumToNav" 
-                    stroke="#f59e0b" 
+                    stroke="var(--chart-tertiary)" 
                     strokeWidth={2}
                     name="Premium to NAV %"
                   />

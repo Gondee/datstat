@@ -64,7 +64,7 @@ export default function Dashboard() {
       width: '100px',
       render: (value) => (
         <div className="flex items-center space-x-2">
-          <span className="font-bold text-green-400">{value as string}</span>
+          <span className="font-bold text-[color:var(--terminal-accent)]">{value as string}</span>
           {watchlist.includes(value as string) && (
             <Eye className="w-3 h-3 text-amber-400" />
           )}
@@ -76,7 +76,7 @@ export default function Dashboard() {
       label: 'Company',
       sortable: true,
       render: (value) => (
-        <span className="text-green-100 truncate max-w-[200px] block">{value as string}</span>
+        <span className="text-[color:var(--terminal-text-primary)] truncate max-w-[200px] block">{value as string}</span>
       ),
     },
     {
@@ -172,8 +172,8 @@ export default function Dashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold text-green-400 font-mono">DATstat</h1>
-            <p className="text-green-500/70 text-sm mt-1">
+            <h1 className="text-3xl font-bold text-[color:var(--terminal-accent)] font-mono">DATstat</h1>
+            <p className="text-[color:var(--terminal-text-secondary)] text-sm mt-1">
               Digital Asset Treasury Analytics Platform
             </p>
           </div>

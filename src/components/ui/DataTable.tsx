@@ -93,52 +93,52 @@ export function DataTable<T extends Record<string, unknown>>({
     if (!column.sortable) return null;
     
     if (sortColumn !== column.key) {
-      return <ChevronsUpDown className="w-3 h-3 text-green-500/50" />;
+      return <ChevronsUpDown className="w-3 h-3 text-[color:var(--terminal-text-muted)]" />;
     }
     
     return sortDirection === 'asc' 
-      ? <ChevronUp className="w-3 h-3 text-green-400" />
-      : <ChevronDown className="w-3 h-3 text-green-400" />;
+      ? <ChevronUp className="w-3 h-3 text-[color:var(--terminal-accent)]" />
+      : <ChevronDown className="w-3 h-3 text-[color:var(--terminal-accent)]" />;
   };
 
   const rowClasses = (index: number) => cn(
-    'border-b border-green-500/20 transition-colors duration-150',
+    'border-b border-[color:var(--terminal-border)] transition-colors duration-150',
     compact ? 'h-8' : 'h-12',
-    striped && index % 2 === 1 && 'bg-green-500/5',
-    selectedRows.has(index) && 'bg-green-500/20',
-    selectedIndex === index && keyboardNavigation && 'bg-green-500/30 ring-1 ring-green-400',
-    hoveredIndex === index && 'bg-green-500/10',
-    onRowClick && 'cursor-pointer hover:bg-green-500/15'
+    striped && index % 2 === 1 && 'bg-[color:var(--terminal-accent)]/5',
+    selectedRows.has(index) && 'bg-[color:var(--terminal-accent)]/20',
+    selectedIndex === index && keyboardNavigation && 'bg-[color:var(--terminal-accent)]/30 ring-1 ring-[color:var(--terminal-accent)]',
+    hoveredIndex === index && 'bg-[color:var(--terminal-accent)]/10',
+    onRowClick && 'cursor-pointer hover:bg-[color:var(--terminal-accent)]/15'
   );
 
   if (loading) {
     return (
-      <div className={cn('border border-green-500/50 rounded-lg bg-black', className)}>
+      <div className={cn('border border-[color:var(--terminal-border)] rounded-lg bg-[color:var(--terminal-surface)]', className)}>
         <div className="p-8 text-center">
-          <div className="inline-block w-6 h-6 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-          <p className="mt-2 text-green-500/70">Loading data...</p>
+          <div className="inline-block w-6 h-6 border-2 border-[color:var(--terminal-accent)] border-t-transparent rounded-full animate-spin" />
+          <p className="mt-2 text-[color:var(--terminal-text-secondary)]">Loading data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn('border border-green-500/50 rounded-lg bg-black overflow-hidden', className)}>
+    <div className={cn('border border-[color:var(--terminal-border)] rounded-lg bg-[color:var(--terminal-surface)] overflow-hidden', className)}>
       <div className="overflow-x-auto">
         <table className="w-full font-mono text-sm">
           <thead>
             <tr className={cn(
-              'border-b border-green-500/50 bg-black',
+              'border-b border-[color:var(--terminal-border)] bg-[color:var(--terminal-surface)]',
               stickyHeader && 'sticky top-0 z-10'
             )}>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
                   className={cn(
-                    'px-4 py-3 text-green-400 font-medium',
+                    'px-4 py-3 text-[color:var(--terminal-accent)] font-medium',
                     column.align === 'center' && 'text-center',
                     column.align === 'right' && 'text-right',
-                    column.sortable && 'cursor-pointer hover:text-green-300 select-none',
+                    column.sortable && 'cursor-pointer hover:text-[color:var(--terminal-accent-light)] select-none',
                     compact && 'py-2'
                   )}
                   style={{ width: column.width }}
@@ -167,7 +167,7 @@ export function DataTable<T extends Record<string, unknown>>({
                   <td
                     key={String(column.key)}
                     className={cn(
-                      'px-4 py-3 text-green-100',
+                      'px-4 py-3 text-[color:var(--terminal-text-primary)]',
                       column.align === 'center' && 'text-center',
                       column.align === 'right' && 'text-right',
                       compact && 'py-2'
@@ -185,14 +185,14 @@ export function DataTable<T extends Record<string, unknown>>({
         </table>
         
         {sortedData.length === 0 && !loading && (
-          <div className="p-8 text-center text-green-500/50">
+          <div className="p-8 text-center text-[color:var(--terminal-text-secondary)]">
             No data available
           </div>
         )}
       </div>
       
       {keyboardNavigation && sortedData.length > 0 && (
-        <div className="border-t border-green-500/50 px-4 py-2 text-xs text-green-500/50">
+        <div className="border-t border-[color:var(--terminal-border)] px-4 py-2 text-xs text-[color:var(--terminal-text-secondary)]">
           j/k or ↑↓ navigate • Enter select • {sortedData.length} rows
         </div>
       )}
