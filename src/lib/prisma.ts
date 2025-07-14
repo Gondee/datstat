@@ -6,15 +6,30 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Create Prisma client with connection pooling and logging configuration
-export const prisma = globalForPrisma.prisma ?? 
-  new PrismaClient({
+// During build phase, we might not have a DATABASE_URL yet
+const createPrismaClient = () => {
+  // If we're in build phase and no DATABASE_URL, return a dummy URL
+  // This allows the build to complete, but the app won't work without a real DB
+  const databaseUrl = process.env.DATABASE_URL || 
+    (process.env.VERCEL && !process.env.DATABASE_URL ? 
+      'postgresql://user:password@localhost:5432/mydb?schema=public' : 
+      undefined);
+
+  if (!databaseUrl && process.env.NODE_ENV === 'production') {
+    console.warn('DATABASE_URL not set in production environment');
+  }
+
+  return new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: databaseUrl,
       },
     },
   });
+};
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 // Prevent multiple instances in development (hot reload issue)
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
