@@ -7,7 +7,7 @@ import { Lock, User, Shield } from 'lucide-react';
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState({
-    username: '',
+    email: '',
     password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -67,11 +67,11 @@ export default function LoginPage() {
             <div>
               <div className="relative">
                 <TerminalInput
-                  label="Username"
-                  type="text"
-                  value={credentials.username}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, username: e.target.value }))}
-                  placeholder="Enter your username"
+                  label="Email"
+                  type="email"
+                  value={credentials.email}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter your email address"
                   required
                   disabled={isLoading}
                   className="pl-10"

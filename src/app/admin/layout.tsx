@@ -101,8 +101,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             })}
           </nav>
 
-          {/* Logout */}
-          <div className="p-4 border-t border-[color:var(--terminal-border)]">
+          {/* User Info & Logout */}
+          <div className="p-4 border-t border-[color:var(--terminal-border)] space-y-3">
+            <div className="flex items-center space-x-3 px-3 py-2 rounded-md bg-[color:var(--terminal-accent)]/5">
+              <div className="p-1 rounded bg-[color:var(--terminal-accent)]/20">
+                <Shield className="w-4 h-4 text-[color:var(--terminal-accent)]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-mono font-bold text-[color:var(--terminal-text-primary)] truncate">
+                  Administrator
+                </p>
+                <p className="text-xs text-[color:var(--terminal-text-secondary)] truncate">
+                  admin@datstat.com
+                </p>
+              </div>
+            </div>
             <TerminalButton
               variant="ghost"
               size="sm"

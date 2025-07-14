@@ -16,14 +16,15 @@ import {
 } from 'lucide-react';
 import { TerminalCard, TerminalButton, TerminalInput } from '@/components/ui';
 import { Company } from '@/types';
+import CompanyFormModal from '@/components/admin/CompanyFormModal';
 
 export default function CompaniesManagement() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
-  const [, setShowAddModal] = useState(false);
-  const [, setShowEditModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Mock data load - in production this would be from API
@@ -50,12 +51,41 @@ export default function CompaniesManagement() {
 
   const handleAddCompany = () => {
     setSelectedCompany(null);
-    setShowAddModal(true);
+    setFormMode('add');
+    setShowFormModal(true);
   };
 
   const handleEditCompany = (company: Company) => {
     setSelectedCompany(company);
-    setShowEditModal(true);
+    setFormMode('edit');
+    setShowFormModal(true);
+  };
+
+  const handleSaveCompany = async (companyData: Partial<Company>) => {
+    try {
+      if (formMode === 'add') {
+        // In production, this would be an API call
+        const newCompany: Company = {
+          ...companyData as Company,
+          treasury: [],
+          executiveCompensation: [],
+          lastUpdated: new Date().toISOString()
+        };
+        setCompanies(prev => [...prev, newCompany]);
+      } else if (selectedCompany) {
+        // Update existing company
+        setCompanies(prev => prev.map(c => 
+          c.ticker === selectedCompany.ticker 
+            ? { ...c, ...companyData, lastUpdated: new Date().toISOString() }
+            : c
+        ));
+      }
+      setShowFormModal(false);
+      setSelectedCompany(null);
+    } catch (error) {
+      console.error('Failed to save company:', error);
+      throw error;
+    }
   };
 
   const handleDeleteCompany = (company: Company) => {
@@ -353,6 +383,18 @@ export default function CompaniesManagement() {
           </div>
         </TerminalCard>
       </div>
+
+      {/* Company Form Modal */}
+      <CompanyFormModal
+        isOpen={showFormModal}
+        onClose={() => {
+          setShowFormModal(false);
+          setSelectedCompany(null);
+        }}
+        onSave={handleSaveCompany}
+        company={selectedCompany}
+        mode={formMode}
+      />
     </div>
   );
 }

@@ -5,10 +5,12 @@ import { Grid, List, Search, Command, Eye, EyeOff, Building2, TrendingUp, LogIn 
 import { useDATStore, useCompanies } from '@/utils/store';
 import { TerminalCard, MetricCard, DataTable, TerminalButton, TerminalInput, Column } from '@/components/ui';
 import { CommandPalette } from '@/components/keyboard/CommandPalette';
+import { LiveDashboard } from '@/components/dashboard/LiveDashboard';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { formatCurrency, formatPercentage, getChangeColor } from '@/utils/formatters';
 import { CompanyWithMetrics } from '@/types';
 import { useRouter } from 'next/navigation';
+import { MNavComparisonChart } from '@/components/charts';
 
 export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -234,26 +236,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Summary Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <MetricCard
-          title="Total Treasury Value"
-          value={formatCurrency(totalTreasuryValue, 0)}
-          icon={<Grid className="w-4 h-4" />}
-        />
-        <MetricCard
-          title="Average Premium to NAV"
-          value={formatPercentage(avgPremiumToNav)}
-          change={5.2}
-          changeType="percentage"
-          icon={<TrendingUp className="w-4 h-4" />}
-        />
-        <MetricCard
-          title="Total Market Cap"
-          value={formatCurrency(totalMarketCap, 0)}
-          icon={<Building2 className="w-4 h-4" />}
-        />
-      </div>
+      {/* Live Dashboard Integration */}
+      <LiveDashboard 
+        companies={filteredCompanies}
+        initialMarketData={{
+          totalTreasuryValue,
+          avgPremiumToNav,
+          totalMarketCap
+        }}
+      />
+
 
       {/* Companies Display */}
       {viewMode === 'grid' ? (

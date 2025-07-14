@@ -1,0 +1,340 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Admin Users for authentication and access control
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(VIEWER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+// Companies table - core company data
+model Company {
+  id                    String   @id @default(cuid())
+  ticker                String   @unique
+  name                  String
+  description           String?
+  sector                String
+  marketCap             Float
+  sharesOutstanding     Float
+  shareholdersEquity    Float
+  totalDebt             Float
+  lastUpdated           DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Business model data
+  revenueStreams        String[]
+  operatingRevenue      Float    @default(0)
+  operatingExpenses     Float    @default(0)
+  cashBurnRate          Float    @default(0)
+  isTreasuryFocused     Boolean  @default(false)
+  legacyBusinessValue   Float    @default(0)
+
+  // Governance data
+  boardSize             Int      @default(0)
+  independentDirectors  Int      @default(0)
+  ceoFounder            Boolean  @default(false)
+  votingRights          String?
+  auditFirm             String?
+
+  // Relationships
+  treasuryHoldings      TreasuryHolding[]
+  treasuryTransactions  TreasuryTransaction[]
+  marketData            MarketData[]
+  capitalStructure      CapitalStructure?
+  executiveCompensation ExecutiveCompensation[]
+  historicalMetrics     HistoricalMetric[]
+
+  @@index([ticker])
+  @@index([sector])
+  @@index([lastUpdated])
+  @@map("companies")
+}
+
+// Treasury Holdings - crypto positions with real-time values
+model TreasuryHolding {
+  id                      String            @id @default(cuid())
+  companyId               String
+  crypto                  CryptoType
+  amount                  Float
+  averageCostBasis        Float
+  totalCost               Float
+  currentValue            Float
+  unrealizedGain          Float
+  unrealizedGainPercent   Float
+  stakingYield            Float?
+  stakedAmount            Float?
+  createdAt               DateTime          @default(now())
+  updatedAt               DateTime          @updatedAt
+
+  // Relationships
+  company                 Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  transactions            TreasuryTransaction[]
+
+  @@index([companyId])
+  @@index([crypto])
+  @@index([updatedAt])
+  @@map("treasury_holdings")
+}
+
+// Treasury Transactions - historical transaction records
+model TreasuryTransaction {
+  id              String            @id @default(cuid())
+  companyId       String
+  holdingId       String?
+  date            DateTime
+  amount          Float
+  pricePerUnit    Float
+  totalCost       Float
+  type            TransactionType
+  fundingMethod   FundingMethod?
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relationships
+  company         Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  holding         TreasuryHolding?  @relation(fields: [holdingId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([date])
+  @@index([type])
+  @@map("treasury_transactions")
+}
+
+// Market Data - real-time crypto/stock prices with timestamps
+model MarketData {
+  id              String     @id @default(cuid())
+  ticker          String
+  companyId       String?
+  symbol          String?    // For crypto prices
+  price           Float
+  change24h       Float      @default(0)
+  change24hPercent Float     @default(0)
+  volume24h       Float      @default(0)
+  high24h         Float?
+  low24h          Float?
+  marketCap       Float?
+  timestamp       DateTime   @default(now())
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relationships
+  company         Company?   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([ticker])
+  @@index([symbol])
+  @@index([timestamp])
+  @@index([companyId])
+  @@map("market_data")
+}
+
+// Capital Structure - convertible debt, warrants, share counts
+model CapitalStructure {
+  id                        String            @id @default(cuid())
+  companyId                 String            @unique
+  sharesBasic               Float
+  sharesDilutedCurrent      Float
+  sharesDilutedAssumed      Float
+  sharesFloat               Float
+  sharesInsiderOwned        Float
+  sharesInstitutionalOwned  Float
+  weightedAverageShares     Float
+  stockOptions              Float             @default(0)
+  restrictedStockUnits      Float             @default(0)
+  performanceStockUnits     Float             @default(0)
+  createdAt                 DateTime          @default(now())
+  updatedAt                 DateTime          @updatedAt
+
+  // Relationships
+  company                   Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  convertibleDebt           ConvertibleDebt[]
+  warrants                  Warrant[]
+
+  @@index([companyId])
+  @@map("capital_structure")
+}
+
+// Convertible Debt
+model ConvertibleDebt {
+  id                String            @id @default(cuid())
+  capitalStructureId String
+  issueDate         DateTime
+  maturityDate      DateTime
+  principal         Float
+  interestRate      Float
+  conversionPrice   Float
+  conversionRatio   Float
+  currentValue      Float
+  isOutstanding     Boolean           @default(true)
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  capitalStructure  CapitalStructure  @relation(fields: [capitalStructureId], references: [id], onDelete: Cascade)
+
+  @@index([capitalStructureId])
+  @@index([maturityDate])
+  @@map("convertible_debt")
+}
+
+// Warrants
+model Warrant {
+  id                String            @id @default(cuid())
+  capitalStructureId String
+  issueDate         DateTime
+  expirationDate    DateTime
+  strikePrice       Float
+  sharesPerWarrant  Float
+  totalWarrants     Float
+  isOutstanding     Boolean           @default(true)
+  notes             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  capitalStructure  CapitalStructure  @relation(fields: [capitalStructureId], references: [id], onDelete: Cascade)
+
+  @@index([capitalStructureId])
+  @@index([expirationDate])
+  @@map("warrants")
+}
+
+// Executive Compensation - management compensation data
+model ExecutiveCompensation {
+  id                  String   @id @default(cuid())
+  companyId           String
+  name                String
+  title               String
+  year                Int
+  cashCompensation    Float
+  equityCompensation  Float
+  cryptoCompensation  Float?
+  totalCompensation   Float
+  sharesOwned         Float
+  optionsOutstanding  Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Relationships
+  company             Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, name, year])
+  @@index([companyId])
+  @@index([year])
+  @@map("executive_compensation")
+}
+
+// Historical Metrics - time-series financial metrics
+model HistoricalMetric {
+  id                      String   @id @default(cuid())
+  companyId               String
+  date                    DateTime
+  stockPrice              Float
+  treasuryValue           Float
+  navPerShare             Float
+  premiumToNav            Float
+  volume                  Float
+  sharesOutstanding       Float
+  sharesDiluted           Float
+  cryptoYield             Float    @default(0)
+  impliedVolatility       Float?
+  beta                    Float?
+  institutionalOwnership  Float?
+  shortInterest           Float?
+  borrowCost              Float?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relationships
+  company                 Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, date])
+  @@index([companyId])
+  @@index([date])
+  @@map("historical_metrics")
+}
+
+// Data Sources - integration status and health monitoring
+model DataSource {
+  id          String             @id @default(cuid())
+  name        String             @unique
+  type        DataSourceType
+  url         String?
+  apiKey      String?
+  status      DataSourceStatus   @default(ACTIVE)
+  lastSync    DateTime?
+  syncFrequency String?          // e.g., "5m", "1h", "1d"
+  errorCount  Int                @default(0)
+  lastError   String?
+  config      Json?              // Flexible configuration storage
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([lastSync])
+  @@map("data_sources")
+}
+
+// Enums
+enum CryptoType {
+  BTC
+  ETH
+  SOL
+}
+
+enum TransactionType {
+  PURCHASE
+  SALE
+  STAKE
+  UNSTAKE
+}
+
+enum FundingMethod {
+  EQUITY
+  CONVERTIBLE_DEBT
+  CREDIT_FACILITY
+  PIPE
+  AT_THE_MARKET
+}
+
+enum DataSourceType {
+  CRYPTO_PRICE_API
+  STOCK_PRICE_API
+  TREASURY_DATA
+  FILING_DATA
+  NEWS_API
+  MARKET_DATA
+}
+
+enum DataSourceStatus {
+  ACTIVE
+  INACTIVE
+  ERROR
+  MAINTENANCE
+}
