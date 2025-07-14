@@ -117,9 +117,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-64 min-h-screen">
         {/* Top bar */}
-        <div className="sticky top-0 z-10 bg-[color:var(--terminal-surface)] border-b border-[color:var(--terminal-border)] px-6 py-4">
+        <div className="bg-[color:var(--terminal-surface)] border-b border-[color:var(--terminal-border)] px-6 py-4">
           <div className="flex items-center justify-between">
             <button
               className="lg:hidden"

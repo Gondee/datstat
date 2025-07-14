@@ -183,22 +183,22 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm">
       <div className="fixed left-1/2 top-1/4 w-full max-w-lg -translate-x-1/2 transform">
-        <div className="border border-green-500/50 bg-black/95 shadow-2xl">
+        <div className="border border-[color:var(--terminal-border)] bg-[color:var(--terminal-surface)] shadow-2xl rounded-lg">
           {/* Search Input */}
-          <div className="flex items-center border-b border-green-500/50 px-4 py-3">
-            <Search className="mr-3 h-4 w-4 text-green-400" />
+          <div className="flex items-center border-b border-[color:var(--terminal-border)] px-4 py-3">
+            <Search className="mr-3 h-4 w-4 text-[color:var(--terminal-accent)]" />
             <input
               ref={inputRef}
               type="text"
               placeholder="Type a command or search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="flex-1 bg-transparent text-green-100 placeholder-green-500/50 outline-none"
+              className="flex-1 bg-transparent text-[color:var(--terminal-text-primary)] placeholder-[color:var(--terminal-text-secondary)] outline-none font-mono"
             />
             {query && (
               <button
                 onClick={() => setQuery('')}
-                className="ml-2 text-green-500/50 hover:text-green-400"
+                className="ml-2 text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-accent)]"
               >
                 ×
               </button>
@@ -208,13 +208,13 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           {/* Commands List */}
           <div className="max-h-96 overflow-y-auto">
             {Object.entries(groupedCommands).length === 0 ? (
-              <div className="px-4 py-8 text-center text-green-500/50">
+              <div className="px-4 py-8 text-center text-[color:var(--terminal-text-secondary)]">
                 No commands found
               </div>
             ) : (
               Object.entries(groupedCommands).map(([group, groupCommands]) => (
                 <div key={group}>
-                  <div className="border-b border-green-500/20 px-4 py-2 text-xs font-semibold text-green-400">
+                  <div className="border-b border-[color:var(--terminal-border)] px-4 py-2 text-xs font-semibold text-[color:var(--terminal-accent)] font-mono">
                     {group}
                   </div>
                   {groupCommands.map((command) => {
@@ -224,22 +224,22 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                         key={command.id}
                         onClick={() => executeCommand(command)}
                         className={cn(
-                          'flex w-full items-center px-4 py-3 text-left hover:bg-green-500/10',
-                          globalIndex === selectedIndex && 'bg-green-500/20'
+                          'flex w-full items-center px-4 py-3 text-left hover:bg-[color:var(--terminal-accent)]/10 transition-colors',
+                          globalIndex === selectedIndex && 'bg-[color:var(--terminal-accent)]/20'
                         )}
                       >
-                        <div className="mr-3 text-green-400">
+                        <div className="mr-3 text-[color:var(--terminal-accent)]">
                           {command.icon}
                         </div>
                         <div className="flex-1">
-                          <div className="text-green-100">{command.label}</div>
+                          <div className="text-[color:var(--terminal-text-primary)] font-mono">{command.label}</div>
                           {command.description && (
-                            <div className="text-xs text-green-500/70">
+                            <div className="text-xs text-[color:var(--terminal-text-secondary)]">
                               {command.description}
                             </div>
                           )}
                         </div>
-                        <ArrowRight className="h-4 w-4 text-green-500/50" />
+                        <ArrowRight className="h-4 w-4 text-[color:var(--terminal-text-secondary)]" />
                       </button>
                     );
                   })}
@@ -249,8 +249,8 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
           </div>
 
           {/* Footer */}
-          <div className="border-t border-green-500/50 px-4 py-2 text-xs text-green-500/50">
-            <div className="flex items-center justify-between">
+          <div className="border-t border-[color:var(--terminal-border)] px-4 py-2 text-xs text-[color:var(--terminal-text-secondary)]">
+            <div className="flex items-center justify-between font-mono">
               <span>↑↓ navigate • ↵ select • esc close</span>
               {recentCommands.length > 0 && !query && (
                 <div className="flex items-center">
