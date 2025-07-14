@@ -192,6 +192,7 @@ export function handleOptions(request: NextRequest): NextResponse {
 }
 
 export const config = {
+  runtime: 'nodejs',
   matcher: [
     // Match all admin routes
     '/admin/:path*',
