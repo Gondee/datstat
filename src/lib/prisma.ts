@@ -10,17 +10,17 @@ const globalForPrisma = globalThis as unknown as {
 const createPrismaClient = () => {
   // If we're in build phase and no DATABASE_URL, return a dummy URL
   // This allows the build to complete, but the app won't work without a real DB
-  const databaseUrl = process.env.DATABASE_URL || 
-    (process.env.VERCEL && !process.env.DATABASE_URL ? 
+  const databaseUrl = (typeof process !== 'undefined' ? process.env?.DATABASE_URL : undefined) || 
+    (typeof process !== 'undefined' && process.env?.VERCEL && !process.env?.DATABASE_URL ? 
       'postgresql://user:password@localhost:5432/mydb?schema=public' : 
       undefined);
 
-  if (!databaseUrl && process.env.NODE_ENV === 'production') {
+  if (!databaseUrl && typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') {
     console.warn('DATABASE_URL not set in production environment');
   }
 
   return new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: typeof process !== 'undefined' && process.env?.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     datasources: {
       db: {
         url: databaseUrl,
@@ -32,14 +32,18 @@ const createPrismaClient = () => {
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 // Prevent multiple instances in development (hot reload issue)
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}
 
 // Graceful shutdown handler - only in Node.js runtime
 if (typeof process !== 'undefined' && process.on) {
   async function gracefulShutdown() {
     console.log('Closing database connections...');
     await prisma.$disconnect();
-    process.exit(0);
+    if (typeof process !== 'undefined' && process.exit) {
+      process.exit(0);
+    }
   }
 
   // Handle shutdown signals

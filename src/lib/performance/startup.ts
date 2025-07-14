@@ -19,11 +19,15 @@ export async function initializePerformanceMonitoring() {
       logger.info('Performance', 'Shutting down performance monitoring...');
       stopMonitoring();
       await prisma.$disconnect();
-      process.exit(0);
+      if (typeof process !== 'undefined' && process.exit) {
+        process.exit(0);
+      }
     };
     
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
+    if (typeof process !== 'undefined' && process.on) {
+      process.on('SIGINT', shutdown);
+      process.on('SIGTERM', shutdown);
+    }
     
     logger.info('Performance', 'Performance monitoring initialized successfully');
   } catch (error) {

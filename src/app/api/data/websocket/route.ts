@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import WebSocketDataServer from '@/services/external/websocket/server';
 import { logger } from '@/services/external/utils/logger';
 
+// Force Node.js runtime for WebSocket operations
+export const runtime = 'nodejs';
+
 // Global WebSocket server instance
 let wsServer: WebSocketDataServer | null = null;
 
@@ -178,19 +181,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Cleanup on process exit
-process.on('SIGINT', async () => {
-  if (wsServer) {
-    console.log('Shutting down WebSocket server...');
-    await wsServer.stop();
-  }
-  process.exit(0);
-});
+// Cleanup on process exit - only in Node.js runtime
+if (typeof process !== 'undefined' && process.on) {
+  process.on('SIGINT', async () => {
+    if (wsServer) {
+      console.log('Shutting down WebSocket server...');
+      await wsServer.stop();
+    }
+    process.exit(0);
+  });
 
-process.on('SIGTERM', async () => {
-  if (wsServer) {
-    console.log('Shutting down WebSocket server...');
-    await wsServer.stop();
-  }
-  process.exit(0);
-});
+  process.on('SIGTERM', async () => {
+    if (wsServer) {
+      console.log('Shutting down WebSocket server...');
+      await wsServer.stop();
+    }
+    process.exit(0);
+  });
+}
