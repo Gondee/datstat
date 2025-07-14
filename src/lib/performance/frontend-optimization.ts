@@ -178,7 +178,7 @@ export function withPerformanceMonitoring<P extends object>(
       componentObserver.measureRender(componentName, renderTime);
     });
 
-    return <Component {...props} />;
+    return React.createElement(Component, props);
   });
 }
 
