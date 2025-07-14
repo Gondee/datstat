@@ -333,5 +333,3 @@ export class WorkerManager {
   }
 }
 
-// React import for the hooks
-import * as React from 'react';
