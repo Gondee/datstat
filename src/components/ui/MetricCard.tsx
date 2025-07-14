@@ -58,14 +58,14 @@ export function MetricCard({
   if (isLoading) {
     return (
       <div className={cn(
-        'bg-black border border-green-500/50 rounded-lg',
+        'bg-[color:var(--terminal-surface)] border border-[color:var(--terminal-border)] rounded-lg',
         sizeClasses[size],
         className
       )}>
         <div className="space-y-2">
-          <div className="h-4 bg-green-500/20 rounded animate-pulse" />
-          <div className="h-6 bg-green-500/20 rounded animate-pulse" />
-          <div className="h-3 bg-green-500/20 rounded w-2/3 animate-pulse" />
+          <div className="h-4 bg-[color:var(--terminal-primary)]/20 rounded animate-pulse" />
+          <div className="h-6 bg-[color:var(--terminal-primary)]/20 rounded animate-pulse" />
+          <div className="h-3 bg-[color:var(--terminal-primary)]/20 rounded w-2/3 animate-pulse" />
         </div>
       </div>
     );
@@ -74,7 +74,7 @@ export function MetricCard({
   return (
     <div
       className={cn(
-        'bg-black border border-green-500/50 rounded-lg transition-all duration-200 hover:border-green-400/70',
+        'bg-[color:var(--terminal-surface)] border border-[color:var(--terminal-border)] rounded-lg transition-all duration-200 hover:border-[color:var(--terminal-primary)]/70',
         sizeClasses[size],
         pulse && 'animate-pulse',
         className
@@ -83,14 +83,14 @@ export function MetricCard({
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center space-x-2 mb-1">
-            {icon && <div className="text-green-400 flex-shrink-0">{icon}</div>}
-            <p className="text-green-500/70 text-xs uppercase tracking-wider font-medium truncate">
+            {icon && <div className="text-[color:var(--terminal-accent)] flex-shrink-0">{icon}</div>}
+            <p className="text-[color:var(--terminal-text-secondary)] text-xs uppercase tracking-wider font-medium truncate">
               {title}
             </p>
           </div>
           
           <p className={cn(
-            'font-mono font-bold text-green-100 leading-none',
+            'font-mono font-bold text-[color:var(--terminal-text-primary)] leading-none',
             textSizes[size]
           )}>
             {value}

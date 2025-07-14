@@ -1,18 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  /* Terminal color scheme */
-  --terminal-black: #000000;
-  --terminal-green: #10b981;
-  --terminal-green-dark: #059669;
-  --terminal-green-light: #34d399;
-  --terminal-amber: #f59e0b;
-  --terminal-red: #ef4444;
-  --terminal-gray: #6b7280;
+  /* Professional terminal color scheme inspired by Parsec/Bloomberg */
+  --terminal-black: #0a0a0b;
+  --terminal-dark: #1a1a1c;
+  --terminal-surface: #242428;
+  --terminal-border: #2a2a2e;
+  --terminal-primary: #6b7c93;
+  --terminal-primary-hover: #8291a8;
+  --terminal-secondary: #4a525e;
+  --terminal-accent: #7c6fb1;
+  --terminal-accent-light: #9b8cc7;
+  --terminal-success: #5a9679;
+  --terminal-warning: #b8956a;
+  --terminal-danger: #c9665e;
+  --terminal-muted: #6b7280;
+  --terminal-text-primary: #e2e4e8;
+  --terminal-text-secondary: #9ca3af;
+  --terminal-text-muted: #6b7280;
   
-  /* Original variables */
-  --background: #000000;
-  --foreground: #10b981;
+  /* Chart colors */
+  --chart-primary: #7c6fb1;
+  --chart-secondary: #5a9679;
+  --chart-tertiary: #b8956a;
+  --chart-quaternary: #6b7c93;
+  
+  /* Original variables updated */
+  --background: #0a0a0b;
+  --foreground: #e2e4e8;
 }
 
 @theme inline {
@@ -24,8 +39,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #000000;
-    --foreground: #10b981;
+    --background: #0a0a0b;
+    --foreground: #e2e4e8;
   }
 }
 
@@ -37,24 +52,24 @@ body {
   line-height: 1.5;
 }
 
-/* Terminal-style scrollbar */
+/* Professional terminal-style scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--terminal-black);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: var(--terminal-dark);
+  border: 1px solid var(--terminal-border);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--terminal-green-dark);
+  background: var(--terminal-secondary);
   border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--terminal-green);
+  background: var(--terminal-primary);
 }
 
 /* Focus styles */
@@ -63,14 +78,14 @@ body {
 }
 
 *:focus-visible {
-  outline: 2px solid var(--terminal-green);
+  outline: 2px solid var(--terminal-primary);
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(16, 185, 129, 0.3);
-  color: var(--terminal-green-light);
+  background-color: rgba(124, 111, 177, 0.3);
+  color: var(--terminal-text-primary);
 }
 
 /* Animations */

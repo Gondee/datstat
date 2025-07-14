@@ -85,7 +85,7 @@ export default function Dashboard() {
       render: (_, row) => {
         const primaryHolding = row.treasury[0];
         return (
-          <span className="text-green-300 font-mono">
+          <span className="text-[color:var(--terminal-accent-light)] font-mono">
             {primaryHolding.crypto}
           </span>
         );
@@ -97,7 +97,7 @@ export default function Dashboard() {
       sortable: true,
       align: 'right',
       render: (_, row) => (
-        <span className="font-mono text-green-100">
+        <span className="font-mono text-[color:var(--terminal-text-primary)]">
           {formatCurrency(row.metrics.treasuryValue, 0)}
         </span>
       ),
@@ -109,7 +109,7 @@ export default function Dashboard() {
       align: 'right',
       render: (_, row) => (
         <div className="text-right">
-          <div className="font-mono text-green-100">
+          <div className="font-mono text-[color:var(--terminal-text-primary)]">
             {formatCurrency(row.marketData.price)}
           </div>
           <div className={`text-xs ${getChangeColor(row.marketData.change24hPercent)}`}>
@@ -165,7 +165,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-black p-6">
+    <div className="min-h-screen bg-[color:var(--terminal-black)] p-6">
       <CommandPalette isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
       
       {/* Header */}

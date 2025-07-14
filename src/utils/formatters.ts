@@ -34,7 +34,7 @@ export function formatChange(value: number, isPercentage = false): string {
 }
 
 export function getChangeColor(value: number): string {
-  if (value > 0) return 'text-green-400';
-  if (value < 0) return 'text-red-400';
-  return 'text-gray-400';
+  if (value > 0) return 'text-[color:var(--terminal-success)]';
+  if (value < 0) return 'text-[color:var(--terminal-danger)]';
+  return 'text-[color:var(--terminal-text-muted)]';
 }

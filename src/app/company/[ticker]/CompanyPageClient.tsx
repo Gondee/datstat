@@ -405,7 +405,7 @@ export default function CompanyPageClient({ ticker }: CompanyPageClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black p-6">
+    <div className="min-h-screen bg-[color:var(--terminal-black)] p-6">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center space-x-4 mb-6">

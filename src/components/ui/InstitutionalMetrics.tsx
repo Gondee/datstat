@@ -105,20 +105,20 @@ export function InstitutionalMetrics({ company }: InstitutionalMetricsProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-green-500/70 text-sm">Implied Volatility</span>
-              <span className="text-green-100 font-mono">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Implied Volatility</span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
                 {formatPercentage(metrics.riskMetrics.impliedVolatility)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-green-500/70 text-sm">Beta</span>
-              <span className="text-green-100 font-mono">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Beta</span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
                 {metrics.riskMetrics.beta.toFixed(2)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-green-500/70 text-sm">Concentration Risk</span>
-              <span className="text-green-100 font-mono">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Concentration Risk</span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
                 {formatPercentage(metrics.riskMetrics.treasuryConcentrationRisk)}
               </span>
             </div>
@@ -126,31 +126,31 @@ export function InstitutionalMetrics({ company }: InstitutionalMetricsProps) {
           
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-green-500/70 text-sm">Liquidity Risk</span>
-              <span className="text-green-100 font-mono">
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Liquidity Risk</span>
+              <span className="text-[color:var(--terminal-text-primary)] font-mono">
                 {formatPercentage(metrics.riskMetrics.liquidityRisk)}
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-green-500/70 text-sm">Debt Service Coverage</span>
-              <span className={`font-mono ${metrics.riskMetrics.debtServiceCoverage > 1.5 ? 'text-green-400' : 
-                metrics.riskMetrics.debtServiceCoverage > 1.0 ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Debt Service Coverage</span>
+              <span className={`font-mono ${metrics.riskMetrics.debtServiceCoverage > 1.5 ? 'text-[color:var(--terminal-success)]' : 
+                metrics.riskMetrics.debtServiceCoverage > 1.0 ? 'text-[color:var(--terminal-warning)]' : 'text-[color:var(--terminal-danger)]'}`}>
                 {metrics.riskMetrics.debtServiceCoverage.toFixed(2)}x
               </span>
             </div>
           </div>
           
           <div className="space-y-3">
-            <div className="p-3 border border-green-500/20 rounded">
+            <div className="p-3 border border-[color:var(--terminal-border)] rounded">
               <div className="text-center">
-                <div className="text-xl font-bold text-green-400 mb-1">
+                <div className="text-xl font-bold text-[color:var(--terminal-accent)] mb-1">
                   Overall Risk Score
                 </div>
                 <div className="text-2xl font-mono mb-2">
                   {/* Risk score would come from RiskAssessment calculation */}
-                  <span className="text-yellow-400">65/100</span>
+                  <span className="text-[color:var(--terminal-warning)]">65/100</span>
                 </div>
-                <div className="text-xs text-green-500/70">
+                <div className="text-xs text-[color:var(--terminal-text-secondary)]">
                   Medium Risk
                 </div>
               </div>

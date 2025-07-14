@@ -39,16 +39,16 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
       {/* Yield Performance Overview */}
       <TerminalCard title="Crypto Yield Performance Dashboard">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="p-4 border border-green-500/20 rounded">
+          <div className="p-4 border border-[color:var(--terminal-border)] rounded">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-green-500/70 text-sm">Current Crypto Yield</span>
-              <Zap className="w-4 h-4 text-yellow-400" />
+              <span className="text-[color:var(--terminal-text-secondary)] text-sm">Current Crypto Yield</span>
+              <Zap className="w-4 h-4 text-[color:var(--terminal-warning)]" />
             </div>
-            <div className="text-2xl font-bold text-green-400 font-mono">
+            <div className="text-2xl font-bold text-[color:var(--terminal-accent)] font-mono">
               {formatPercentage(currentYield)}
             </div>
             <div className={`text-xs flex items-center mt-1 ${
-              yieldMomentum >= 0 ? 'text-green-400' : 'text-red-400'
+              yieldMomentum >= 0 ? 'text-[color:var(--terminal-success)]' : 'text-[color:var(--terminal-danger)]'
             }`}>
               {yieldMomentum >= 0 ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
               {yieldMomentum >= 0 ? '+' : ''}{formatPercentage(yieldMomentum)} vs previous
@@ -103,23 +103,23 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={yieldData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#10b981" opacity={0.1} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
               <XAxis 
                 dataKey="date" 
-                stroke="#10b981" 
+                stroke="var(--terminal-text-secondary)" 
                 fontSize={12}
               />
               <YAxis 
-                stroke="#10b981" 
+                stroke="var(--terminal-text-secondary)" 
                 fontSize={12}
                 tickFormatter={(value) => `${value}%`}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#000', 
-                  border: '1px solid #10b981',
+                  backgroundColor: 'var(--terminal-surface)', 
+                  border: '1px solid var(--terminal-border)',
                   borderRadius: '4px',
-                  color: '#10b981'
+                  color: 'var(--terminal-text-primary)'
                 }}
                 formatter={(value: number, name: string) => [
                   name === 'cryptoYield' ? `${value}%` : value,
@@ -129,9 +129,9 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
               <Line 
                 type="monotone" 
                 dataKey="cryptoYield" 
-                stroke="#10b981" 
+                stroke="var(--chart-primary)" 
                 strokeWidth={3}
-                dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                dot={{ fill: 'var(--chart-primary)', strokeWidth: 2, r: 4 }}
                 name="Crypto Yield"
               />
             </LineChart>
@@ -206,43 +206,43 @@ export function CryptoYieldTracker({ company }: CryptoYieldTrackerProps) {
               {
                 name: 'Share Dilution',
                 value: metrics.dilutionMetrics.dilutionRate,
-                color: '#ef4444'
+                color: 'var(--terminal-danger)'
               },
               {
                 name: 'Treasury Accretion',
                 value: metrics.dilutionMetrics.treasuryAccretionRate,
-                color: '#10b981'
+                color: 'var(--terminal-success)'
               },
               {
                 name: 'Net Crypto Yield',
                 value: currentYield,
-                color: '#f59e0b'
+                color: 'var(--terminal-warning)'
               }
             ]}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#10b981" opacity={0.1} />
-              <XAxis dataKey="name" stroke="#10b981" fontSize={12} />
-              <YAxis stroke="#10b981" fontSize={12} tickFormatter={(value) => `${value}%`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--terminal-border)" opacity={0.3} />
+              <XAxis dataKey="name" stroke="var(--terminal-text-secondary)" fontSize={12} />
+              <YAxis stroke="var(--terminal-text-secondary)" fontSize={12} tickFormatter={(value) => `${value}%`} />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: '#000', 
-                  border: '1px solid #10b981',
+                  backgroundColor: 'var(--terminal-surface)', 
+                  border: '1px solid var(--terminal-border)',
                   borderRadius: '4px',
-                  color: '#10b981'
+                  color: 'var(--terminal-text-primary)'
                 }}
                 formatter={(value: number) => [`${value}%`, '']}
               />
               <Bar 
                 dataKey="value" 
-                fill="#10b981"
+                fill="var(--chart-primary)"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-4 p-3 bg-green-500/5 border border-green-500/20 rounded">
-          <div className="text-sm text-green-400 font-semibold mb-2">Key Insight:</div>
-          <div className="text-sm text-green-100">
+        <div className="mt-4 p-3 bg-[color:var(--terminal-accent)]/5 border border-[color:var(--terminal-border)] rounded">
+          <div className="text-sm text-[color:var(--terminal-accent)] font-semibold mb-2">Key Insight:</div>
+          <div className="text-sm text-[color:var(--terminal-text-primary)]">
             {metrics.dilutionMetrics.treasuryAccretionRate > 0 
               ? `Successful accretive dilution: Treasury growth (${formatPercentage(metrics.dilutionMetrics.treasuryAccretionRate)}) exceeds share dilution (${formatPercentage(metrics.dilutionMetrics.dilutionRate)})`
               : `Dilutive strategy: Share count growth exceeds treasury accumulation rate`
