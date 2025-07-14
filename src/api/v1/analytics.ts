@@ -330,16 +330,17 @@ export async function getAnalyticsRankings(req: NextRequest): Promise<NextRespon
     const topCompanies = sortedCompanies.slice(0, limit);
 
     // Calculate percentiles
-    topCompanies.forEach((company, index) => {
-      company.rank = index + 1;
-      company.percentile = ((sortedCompanies.length - index) / sortedCompanies.length) * 100;
-    });
+    const rankedCompanies = topCompanies.map((company, index) => ({
+      ...company,
+      rank: index + 1,
+      percentile: ((sortedCompanies.length - index) / sortedCompanies.length) * 100,
+    }));
 
     return ApiResponseBuilder.success({
       metric,
       sector,
       totalCompanies: sortedCompanies.length,
-      rankings: topCompanies,
+      rankings: rankedCompanies,
       statistics: calculateStatistics(sortedCompanies, metric),
       timestamp: new Date().toISOString(),
     });
