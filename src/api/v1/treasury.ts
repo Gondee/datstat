@@ -323,16 +323,16 @@ export async function getTreasurySummary(req: NextRequest): Promise<NextResponse
       summary.totalUnrealizedGain += unrealizedGain;
 
       // By company
-      if (!summary.byCompany.has(holding.companyTicker)) {
-        summary.byCompany.set(holding.companyTicker, {
-          ticker: holding.companyTicker,
+      if (!summary.byCompany.has(holding.company.ticker)) {
+        summary.byCompany.set(holding.company.ticker, {
+          ticker: holding.company.ticker,
           name: holding.company.name,
           totalValue: 0,
           totalCost: 0,
           holdings: [],
         });
       }
-      const companyData = summary.byCompany.get(holding.companyTicker);
+      const companyData = summary.byCompany.get(holding.company.ticker);
       companyData.totalValue += currentValue;
       companyData.totalCost += holding.totalCost;
       companyData.holdings.push({
@@ -357,7 +357,7 @@ export async function getTreasurySummary(req: NextRequest): Promise<NextResponse
       cryptoData.totalValue += currentValue;
       cryptoData.totalCost += holding.totalCost;
       cryptoData.holders.push({
-        ticker: holding.companyTicker,
+        ticker: holding.company.ticker,
         amount: holding.amount,
         value: currentValue,
       });
@@ -373,7 +373,7 @@ export async function getTreasurySummary(req: NextRequest): Promise<NextResponse
     // Get top holdings
     const topHoldings = holdings
       .map(h => ({
-        ticker: h.companyTicker,
+        ticker: h.company.ticker,
         name: h.company.name,
         crypto: h.crypto,
         amount: h.amount,
