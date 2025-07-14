@@ -212,7 +212,7 @@ function MNavComparisonChartComponent({
   };
 
   // Memoize the entire chart section to prevent re-renders
-  const chartSection = useMemo(() => (
+  const chartSection = useMemo(() => isClient ? (
     <div style={{ height: isFullscreen ? 'calc(100vh - 200px)' : height }}>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
@@ -295,7 +295,7 @@ function MNavComparisonChartComponent({
         </ComposedChart>
       </ResponsiveContainer>
     </div>
-  ), [chartData, selectedCompanies, showPremiumDiscount, isFullscreen, height, companies]);
+  ) : null, [chartData, selectedCompanies, showPremiumDiscount, isFullscreen, height, companies, isClient]);
 
   return (
     <TerminalCard className={`${isFullscreen ? 'fixed inset-4 z-50' : ''} transition-all`}>
@@ -385,15 +385,16 @@ function MNavComparisonChartComponent({
         {chartSection}
 
         {/* Legend Summary */}
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          {selectedCompanies.map((ticker, index) => {
-            const company = companies.find(c => c.ticker === ticker);
-            if (!company) return null;
-            
-            const latestData = chartData[chartData.length - 1];
-            const premium = latestData?.[`${ticker}_premium`] as number || 0;
-            
-            return (
+        {isClient && (
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+            {selectedCompanies.map((ticker, index) => {
+              const company = companies.find(c => c.ticker === ticker);
+              if (!company) return null;
+              
+              const latestData = chartData[chartData.length - 1];
+              const premium = latestData?.[`${ticker}_premium`] as number || 0;
+              
+              return (
               <div
                 key={ticker}
                 className="p-2 bg-[color:var(--terminal-bg-dark)] rounded border border-[color:var(--terminal-border)]"
@@ -427,8 +428,9 @@ function MNavComparisonChartComponent({
                 </div>
               </div>
             );
-          })}
-        </div>
+            })}
+          </div>
+        )}
       </div>
     </TerminalCard>
   );
