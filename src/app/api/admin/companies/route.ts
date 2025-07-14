@@ -160,10 +160,10 @@ export async function POST(request: NextRequest) {
       governance
     } = body;
 
-    // Validate required fields
-    if (!ticker || !name || !description || !sector) {
+    // Validate required fields (only ticker and name)
+    if (!ticker || !name) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Ticker and name are required' },
         { status: 400 }
       );
     }
@@ -184,37 +184,37 @@ export async function POST(request: NextRequest) {
       data: {
         ticker: ticker.toUpperCase(),
         name,
-        description,
-        sector,
-        marketCap,
-        sharesOutstanding,
-        shareholdersEquity,
-        totalDebt,
+        description: description || '',
+        sector: sector || 'Unknown',
+        marketCap: marketCap || 0,
+        sharesOutstanding: sharesOutstanding || 1000000, // Default 1M shares
+        shareholdersEquity: shareholdersEquity || 0,
+        totalDebt: totalDebt || 0,
         // Business model fields are directly on Company model
         revenueStreams: businessModel?.revenueStreams || [],
         operatingRevenue: businessModel?.operatingRevenue || 0,
         operatingExpenses: businessModel?.operatingExpenses || 0,
         cashBurnRate: businessModel?.cashBurnRate || 0,
-        isTreasuryFocused: businessModel?.isTreasuryFocused || false,
+        isTreasuryFocused: businessModel?.isTreasuryFocused || true, // Default to treasury-focused
         legacyBusinessValue: businessModel?.legacyBusinessValue || 0,
         // Governance fields are directly on Company model  
-        boardSize: governance?.boardSize || 0,
-        independentDirectors: governance?.independentDirectors || 0,
+        boardSize: governance?.boardSize || 5, // Default board size
+        independentDirectors: governance?.independentDirectors || 3,
         ceoFounder: governance?.ceoFounder || false,
-        votingRights: governance?.votingRights,
-        auditFirm: governance?.auditFirm,
-        capitalStructure: {
+        votingRights: governance?.votingRights || 'standard',
+        auditFirm: governance?.auditFirm || '',
+        capitalStructure: capitalStructure ? {
           create: {
-            sharesBasic: capitalStructure.sharesBasic,
-            sharesDilutedCurrent: capitalStructure.sharesDilutedCurrent,
-            sharesDilutedAssumed: capitalStructure.sharesDilutedAssumed,
-            sharesFloat: capitalStructure.sharesFloat,
-            sharesInsiderOwned: capitalStructure.sharesInsiderOwned,
-            sharesInstitutionalOwned: capitalStructure.sharesInstitutionalOwned,
-            weightedAverageShares: capitalStructure.weightedAverageShares,
-            stockOptions: capitalStructure.stockOptions,
-            restrictedStockUnits: capitalStructure.restrictedStockUnits,
-            performanceStockUnits: capitalStructure.performanceStockUnits,
+            sharesBasic: capitalStructure.sharesBasic || sharesOutstanding || 1000000,
+            sharesDilutedCurrent: capitalStructure.sharesDilutedCurrent || sharesOutstanding || 1000000,
+            sharesDilutedAssumed: capitalStructure.sharesDilutedAssumed || sharesOutstanding || 1000000,
+            sharesFloat: capitalStructure.sharesFloat || (sharesOutstanding || 1000000) * 0.8,
+            sharesInsiderOwned: capitalStructure.sharesInsiderOwned || (sharesOutstanding || 1000000) * 0.15,
+            sharesInstitutionalOwned: capitalStructure.sharesInstitutionalOwned || (sharesOutstanding || 1000000) * 0.65,
+            weightedAverageShares: capitalStructure.weightedAverageShares || sharesOutstanding || 1000000,
+            stockOptions: capitalStructure.stockOptions || 0,
+            restrictedStockUnits: capitalStructure.restrictedStockUnits || 0,
+            performanceStockUnits: capitalStructure.performanceStockUnits || 0,
             convertibleDebt: {
               create: capitalStructure.convertibleDebt?.map((debt: any) => ({
                 issueDate: new Date(debt.issueDate),
@@ -239,6 +239,19 @@ export async function POST(request: NextRequest) {
                 notes: warrant.notes
               })) || []
             }
+          }
+        } : {
+          create: {
+            sharesBasic: sharesOutstanding || 1000000,
+            sharesDilutedCurrent: sharesOutstanding || 1000000,
+            sharesDilutedAssumed: sharesOutstanding || 1000000,
+            sharesFloat: (sharesOutstanding || 1000000) * 0.8,
+            sharesInsiderOwned: (sharesOutstanding || 1000000) * 0.15,
+            sharesInstitutionalOwned: (sharesOutstanding || 1000000) * 0.65,
+            weightedAverageShares: sharesOutstanding || 1000000,
+            stockOptions: 0,
+            restrictedStockUnits: 0,
+            performanceStockUnits: 0
           }
         }
       },

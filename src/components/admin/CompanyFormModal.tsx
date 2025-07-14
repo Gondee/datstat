@@ -165,27 +165,19 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
 
-    // Basic validation
+    // Only validate required fields: ticker and name
     if (!formData.ticker.trim()) newErrors.ticker = 'Ticker symbol is required';
     if (!formData.name.trim()) newErrors.name = 'Company name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.sector.trim()) newErrors.sector = 'Sector is required';
-    if (formData.marketCap <= 0) newErrors.marketCap = 'Market cap must be positive';
-    if (formData.sharesOutstanding <= 0) newErrors.sharesOutstanding = 'Shares outstanding must be positive';
 
-    // Business model validation
+    // Optional validation - only if values are provided
+    if (formData.marketCap < 0) newErrors.marketCap = 'Market cap cannot be negative';
+    if (formData.sharesOutstanding < 0) newErrors.sharesOutstanding = 'Shares outstanding cannot be negative';
     if (formData.operatingRevenue < 0) newErrors.operatingRevenue = 'Operating revenue cannot be negative';
     if (formData.operatingExpenses < 0) newErrors.operatingExpenses = 'Operating expenses cannot be negative';
-
-    // Capital structure validation
-    if (formData.sharesBasic <= 0) newErrors.sharesBasic = 'Basic shares must be positive';
-    if (formData.sharesDilutedCurrent < formData.sharesBasic) {
-      newErrors.sharesDilutedCurrent = 'Diluted shares must be >= basic shares';
-    }
-
-    // Governance validation
-    if (formData.boardSize < 1) newErrors.boardSize = 'Board must have at least 1 member';
-    if (formData.independentDirectors > formData.boardSize) {
+    if (formData.sharesBasic < 0) newErrors.sharesBasic = 'Basic shares cannot be negative';
+    if (formData.boardSize < 0) newErrors.boardSize = 'Board size cannot be negative';
+    if (formData.independentDirectors < 0) newErrors.independentDirectors = 'Independent directors cannot be negative';
+    if (formData.independentDirectors > formData.boardSize && formData.boardSize > 0) {
       newErrors.independentDirectors = 'Independent directors cannot exceed board size';
     }
 
@@ -205,43 +197,46 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
     setSuccessMessage(null);
     
     try {
+      // Use sensible defaults for all optional fields
+      const defaultShares = formData.sharesOutstanding || 1000000;
+      
       const companyData: Partial<Company> = {
         ticker: formData.ticker.toUpperCase(),
         name: formData.name,
-        description: formData.description,
-        sector: formData.sector,
-        marketCap: formData.marketCap,
-        sharesOutstanding: formData.sharesOutstanding,
-        shareholdersEquity: formData.shareholdersEquity,
-        totalDebt: formData.totalDebt,
+        description: formData.description || '',
+        sector: formData.sector || 'Unknown',
+        marketCap: formData.marketCap || 0,
+        sharesOutstanding: defaultShares,
+        shareholdersEquity: formData.shareholdersEquity || 0,
+        totalDebt: formData.totalDebt || 0,
         businessModel: {
-          revenueStreams: formData.revenueStreams.split(',').map(s => s.trim()).filter(s => s),
-          operatingRevenue: formData.operatingRevenue,
-          operatingExpenses: formData.operatingExpenses,
-          cashBurnRate: formData.cashBurnRate,
+          revenueStreams: formData.revenueStreams ? formData.revenueStreams.split(',').map(s => s.trim()).filter(s => s) : [],
+          operatingRevenue: formData.operatingRevenue || 0,
+          operatingExpenses: formData.operatingExpenses || 0,
+          cashBurnRate: formData.cashBurnRate || 0,
           isTreasuryFocused: formData.isTreasuryFocused,
-          legacyBusinessValue: formData.legacyBusinessValue
+          legacyBusinessValue: formData.legacyBusinessValue || 0
         },
         capitalStructure: {
-          sharesBasic: formData.sharesBasic,
-          sharesDilutedCurrent: formData.sharesDilutedCurrent,
-          sharesDilutedAssumed: formData.sharesDilutedAssumed,
-          sharesFloat: formData.sharesFloat,
-          sharesInsiderOwned: formData.sharesInsiderOwned,
-          sharesInstitutionalOwned: formData.sharesInstitutionalOwned,
-          weightedAverageShares: formData.weightedAverageShares,
+          sharesBasic: formData.sharesBasic || defaultShares,
+          sharesDilutedCurrent: formData.sharesDilutedCurrent || defaultShares,
+          sharesDilutedAssumed: formData.sharesDilutedAssumed || defaultShares,
+          sharesFloat: formData.sharesFloat || defaultShares * 0.8,
+          sharesInsiderOwned: formData.sharesInsiderOwned || defaultShares * 0.15,
+          sharesInstitutionalOwned: formData.sharesInstitutionalOwned || defaultShares * 0.65,
+          weightedAverageShares: formData.weightedAverageShares || defaultShares,
           convertibleDebt: company?.capitalStructure?.convertibleDebt || [],
           warrants: company?.capitalStructure?.warrants || [],
-          stockOptions: formData.stockOptions,
-          restrictedStockUnits: formData.restrictedStockUnits,
-          performanceStockUnits: formData.performanceStockUnits
+          stockOptions: formData.stockOptions || 0,
+          restrictedStockUnits: formData.restrictedStockUnits || 0,
+          performanceStockUnits: formData.performanceStockUnits || 0
         },
         governance: {
-          boardSize: formData.boardSize,
-          independentDirectors: formData.independentDirectors,
+          boardSize: formData.boardSize || 5,
+          independentDirectors: formData.independentDirectors || 3,
           ceoFounder: formData.ceoFounder,
-          votingRights: formData.votingRights,
-          auditFirm: formData.auditFirm
+          votingRights: formData.votingRights || 'standard',
+          auditFirm: formData.auditFirm || ''
         },
         treasury: company?.treasury || [],
         executiveCompensation: company?.executiveCompensation || [],
@@ -352,32 +347,63 @@ export default function CompanyFormModal({ isOpen, onClose, onSave, company, mod
           </div>
         )}
 
-        {/* Tab Navigation */}
-        <div className="flex border-b border-[color:var(--terminal-border)] px-6">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-3 text-sm font-mono transition-colors border-b-2 ${
-                  activeTab === tab.id
-                    ? 'border-[color:var(--terminal-accent)] text-[color:var(--terminal-accent)]'
-                    : 'border-transparent text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-text-primary)]'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Tab Navigation - Only show for edit mode */}
+        {mode === 'edit' && (
+          <div className="flex border-b border-[color:var(--terminal-border)] px-6">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 px-4 py-3 text-sm font-mono transition-colors border-b-2 ${
+                    activeTab === tab.id
+                      ? 'border-[color:var(--terminal-accent)] text-[color:var(--terminal-accent)]'
+                      : 'border-transparent text-[color:var(--terminal-text-secondary)] hover:text-[color:var(--terminal-text-primary)]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Form Content */}
         <div className="max-h-[500px] overflow-y-auto p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Info Tab */}
-            {activeTab === 'basic' && (
+            {/* Simplified Add Mode - Only show essential fields */}
+            {mode === 'add' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div>
+                    <TerminalInput
+                      label="Ticker Symbol *"
+                      value={formData.ticker}
+                      onChange={(e) => handleInputChange('ticker', e.target.value.toUpperCase())}
+                      placeholder="e.g., MSTR"
+                      error={errors.ticker}
+                    />
+                  </div>
+                  <div>
+                    <TerminalInput
+                      label="Company Name *"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      placeholder="e.g., MicroStrategy Inc."
+                      error={errors.name}
+                    />
+                  </div>
+                </div>
+                <div className="text-sm text-[color:var(--terminal-text-secondary)] font-mono p-4 bg-[color:var(--terminal-bg-dark)] rounded border border-[color:var(--terminal-border)]">
+                  ℹ️ Only ticker and company name are required. All other financial data can be added later through the edit function or will be sourced automatically from market data.
+                </div>
+              </div>
+            )}
+
+            {/* Full Edit Mode - Show all tabs */}
+            {mode === 'edit' && activeTab === 'basic' && (
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <TerminalInput
