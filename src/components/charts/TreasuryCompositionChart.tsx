@@ -15,7 +15,7 @@ import {
   CartesianGrid,
   Treemap,
 } from 'recharts';
-import { Bitcoin, DollarSign, Coins } from 'lucide-react';
+import { Bitcoin, DollarSign, Coins, TrendingUp } from 'lucide-react';
 import { TerminalCard, TerminalButton } from '@/components/ui';
 import { formatCurrency, formatPercentage } from '@/utils/formatters';
 import { CompanyWithMetrics } from '@/types';

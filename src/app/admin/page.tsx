@@ -1,6 +1,7 @@
 'use client';
 
 import { TerminalCard, MetricCard } from '@/components/ui';
+import Link from 'next/link';
 import { 
   Building2, 
   Database, 
@@ -150,7 +151,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <TerminalCard title="Quick Actions">
           <div className="grid grid-cols-1 gap-4">
-            <a
+            <Link
               href="/admin/companies"
               className="flex items-center justify-between p-4 rounded border border-[color:var(--terminal-border)] hover:border-[color:var(--terminal-accent)] hover:bg-[color:var(--terminal-accent)]/5 transition-colors group"
             >
@@ -166,7 +167,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
-            </a>
+            </Link>
 
             <a
               href="/admin/data"
@@ -184,7 +185,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
-            </a>
+            </Link>
 
             <a
               href="/admin/users"
@@ -202,7 +203,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <TrendingUp className="w-4 h-4 text-[color:var(--terminal-text-secondary)] group-hover:text-[color:var(--terminal-accent)] transition-colors" />
-            </a>
+            </Link>
           </div>
         </TerminalCard>
       </div>

@@ -77,3 +77,24 @@ export type {
   TreasuryHealth,
   ESGScore
 } from './financialHealthEngine';
+
+// Function exports for direct access
+import FinancialHealthEngine from './financialHealthEngine';
+import RiskEngine from './riskEngine';
+import CryptoYieldEngine from './cryptoYieldEngine';
+import EnhancedNAVEngine from './mNavEngine';
+import ComparativeEngine from './comparativeEngine';
+
+// Create singleton instances
+const financialHealthEngine = new FinancialHealthEngine();
+const riskEngine = new RiskEngine();
+const cryptoYieldEngine = new CryptoYieldEngine();
+const navEngine = new EnhancedNAVEngine();
+const comparativeEngine = new ComparativeEngine();
+
+// Export convenience functions
+export const calculateFinancialHealth = financialHealthEngine.calculateFinancialHealth.bind(financialHealthEngine);
+export const calculateRiskMetrics = riskEngine.calculateRiskMetrics.bind(riskEngine);
+export const calculateYieldMetrics = cryptoYieldEngine.calculateCryptoYield.bind(cryptoYieldEngine);
+export const calculateNAVMetrics = navEngine.calculateRealTimeNAV.bind(navEngine);
+export const performComparativeAnalysis = comparativeEngine.performComparativeAnalysis.bind(comparativeEngine);
