@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRealTimeData, useWebSocket, useDataFreshness } from '@/hooks';
 import { MNavComparisonChart } from '@/components/charts/MNavComparisonChart';
 import { TerminalCard, MetricCard, DataStatusIndicator } from '@/components/ui';
@@ -23,6 +23,13 @@ interface LiveDashboardProps {
 export function LiveDashboard({ companies, initialMarketData }: LiveDashboardProps) {
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>(['MSTR', 'DFDV', 'UPXI', 'SBET']);
   const [refreshing, setRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+  
+  // Memoize filtered companies to prevent infinite re-renders
+  const filteredCompanies = useMemo(
+    () => companies.filter(c => selectedCompanies.includes(c.ticker)),
+    [companies, selectedCompanies]
+  );
 
   // Real-time data hooks
   const [webSocketState, webSocketActions] = useWebSocket();
@@ -32,7 +39,11 @@ export function LiveDashboard({ companies, initialMarketData }: LiveDashboardPro
   const [dataFreshnessState, dataFreshnessActions] = useDataFreshness();
   const dataAge = 0;
   const isStale = false;
-  const lastUpdate = new Date();
+
+  // Set lastUpdate on client side only
+  useEffect(() => {
+    setLastUpdate(new Date());
+  }, []);
 
   // Subscribe to real-time updates
   useEffect(() => {
@@ -174,7 +185,7 @@ export function LiveDashboard({ companies, initialMarketData }: LiveDashboardPro
         }
       >
         <MNavComparisonChart
-          companies={companies.filter(c => selectedCompanies.includes(c.ticker))}
+          companies={filteredCompanies}
           timeRange="1D"
           showPremiumDiscount={true}
           height={400}

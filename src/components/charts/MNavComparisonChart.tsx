@@ -68,7 +68,12 @@ export function MNavComparisonChart({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [chartData, setChartData] = useState<MNavDataPoint[]>([]);
-  const [lastUpdate, setLastUpdate] = useState(new Date());
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
+
+  // Set initial timestamp on client side only
+  useEffect(() => {
+    setLastUpdate(new Date());
+  }, []);
 
   // WebSocket connection for real-time updates (disabled for now)
   const { data: wsData, connected } = useWebSocketData(
@@ -248,7 +253,7 @@ export function MNavComparisonChart({
               )}
             </h3>
             <p className="text-xs text-[color:var(--terminal-text-secondary)] mt-1">
-              Last updated: {format(lastUpdate, 'HH:mm:ss')}
+              Last updated: {lastUpdate ? format(lastUpdate, 'HH:mm:ss') : '--:--:--'}
             </p>
           </div>
           
